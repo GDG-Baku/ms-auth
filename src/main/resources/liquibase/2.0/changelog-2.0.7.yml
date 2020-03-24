@@ -13,21 +13,21 @@ databaseChangeLog:
                   value: now()
               - column:
                   name:  email
-                  value: huseynov_ali@outlook.com
+                  value: muradisgenderli441@@gmail.com
               - column:
                   name: name
-                  value: Ali
+                  value: Murad
               - column:
                   name: password
                   value: $2a$10$5zwyNgaZHutcrlKd7vPbxeV/ptSJqohQsigwDerdvj2Px7paDVzGe
               - column:
                   name: role
-                  value: ROLE_ADMIN
+                  value: ROLE_USER
               - column:
                   name: surname
-                  value: Huseynov
+                  value: Isgandarli
               - column:
                   name: username
-                  value: huseynov_ali@outlook.com
+                  value: muradisgenderli441@@gmail.com
             tableName: users
-            remarks: insert mock admin user in users
+            remarks: insert mock user in users

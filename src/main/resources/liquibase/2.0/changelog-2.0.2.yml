@@ -28,6 +28,6 @@ databaseChangeLog:
                   value: Yagubova
               - column:
                   name: username
-                  value: minaya
+                  value: minaya.yagubova@gmail.com
             tableName: users
             remarks: insert mock admin user in users

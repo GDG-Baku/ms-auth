@@ -28,6 +28,6 @@ databaseChangeLog:
                   value: Movsumova
               - column:
                   name: username
-                  value: nigar
+                  value: movsum.nigar@gmail.com
             tableName: users
             remarks: insert mock admin user in users

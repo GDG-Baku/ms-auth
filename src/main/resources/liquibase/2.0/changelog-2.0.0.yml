@@ -28,6 +28,6 @@ databaseChangeLog:
                   value: Isgandarli
               - column:
                   name: username
-                  value: muradisgandar
+                  value: isgandarli_murad@mail.ru
             tableName: users
             remarks: insert mock admin user in users

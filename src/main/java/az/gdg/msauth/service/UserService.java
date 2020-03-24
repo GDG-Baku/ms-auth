@@ -28,12 +28,8 @@ public class UserService {
     public void signUp(UserDTO userDTO) {
 
         Optional<UserEntity> checkedEmail = userRepository.findByEmail(userDTO.getEmail());
-        Optional<UserEntity> checkedUsername = userRepository.findByUsername(userDTO.getUsername());
         if (checkedEmail.isPresent()) {
             throw new WrongDataException("This email already exists");
-        }
-        if (checkedUsername.isPresent()) {
-            throw new WrongDataException("This username already exists");
         }
 
         String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
@@ -41,7 +37,7 @@ public class UserService {
                 .builder()
                 .name(userDTO.getName())
                 .surname(userDTO.getSurname())
-                .username(userDTO.getUsername())
+                .username(userDTO.getEmail())
                 .email(userDTO.getEmail())
                 .password(password)
                 .role(Role.ROLE_USER)
