@@ -4,6 +4,8 @@ plugins {
 	id 'java'
 }
 
+apply plugin: "groovy"
+
 group = 'az.gdg'
 version = '1.0.0'
 sourceCompatibility = '1.8'
@@ -27,12 +29,18 @@ dependencies {
 	implementation('io.springfox:springfox-swagger-ui:2.9.2')
 	implementation 'org.liquibase:liquibase-core'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+	//compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.0', ext: 'pom'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	implementation "org.codehaus.groovy:groovy-all:2.5.8"
+	testImplementation platform("org.spockframework:spock-bom:2.0-M1-groovy-2.5")
+	testImplementation "org.spockframework:spock-core"
+
+	//testCompile group: 'org.spockframework', name: 'spock-spring', version: '2.0-M2-groovy-3.0'
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 

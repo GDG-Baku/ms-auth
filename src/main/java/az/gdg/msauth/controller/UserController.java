@@ -3,6 +3,7 @@ package az.gdg.msauth.controller;
 import az.gdg.msauth.dto.UserDTO;
 import az.gdg.msauth.security.dto.UserInfo;
 import az.gdg.msauth.security.service.AuthenticationService;
+import az.gdg.msauth.security.service.AuthenticationServiceImpl;
 import az.gdg.msauth.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +18,7 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    public UserController(UserService userService,AuthenticationService authenticationService){
+    public UserController(UserService userService, AuthenticationService authenticationService){
         this.userService = userService;
         this.authenticationService = authenticationService;
     }
