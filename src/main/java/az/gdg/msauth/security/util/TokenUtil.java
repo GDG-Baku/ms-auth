@@ -31,11 +31,11 @@ public class TokenUtil {
     private Long expiration;
 
     public UserInfo getUserInfoFromToken(String token) {
-        logger.info("ActionLog.GetUserInfoFromToken.Start");
+        logger.info("UtilLog.GetUserInfoFromToken.Start");
         String userId = getClaimFromToken(token, Claims::getId);
         String email = getClaimFromToken(token, Claims::getSubject);
         String role = getAllClaimsFromToken(token).get("role").toString();
-        logger.info("ActionLog.GetUserInfoFromToken.Stop.Success");
+        logger.info("UtilLog.GetUserInfoFromToken.Stop.Success");
         return UserInfo
                 .builder()
                 .token(token)
@@ -46,14 +46,14 @@ public class TokenUtil {
     }
 
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        logger.info("ActionLog.GetClaimFromToken.Start");
+        logger.info("UtilLog.GetClaimFromToken.Start");
         Claims claims = getAllClaimsFromToken(token);
-        logger.info("ActionLog.GetClaimFromToken.Stop.Success");
+        logger.info("UtilLog.GetClaimFromToken.Stop.Success");
         return claimsResolver.apply(claims);
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        logger.info("ActionLog.GetAllClaimsFromToken.Start");
+        logger.info("UtilLog.GetAllClaimsFromToken.Start");
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
@@ -61,20 +61,20 @@ public class TokenUtil {
     }
 
     public String generateToken(String username, String userId, String role) {
-        logger.info("ActionLog.GenerateToken.Start");
+        logger.info("UtilLog.GenerateToken.Start");
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role);
-        logger.info("ActionLog.GenerateToken.Stop.Success");
+        logger.info("UtilLog.GenerateToken.Stop.Success");
         return doGenerateToken(claims, username, userId);
     }
 
     public String doGenerateToken(Map<String, Object> claims,
                                   String subject, String userId) {
-        logger.info("ActionLog.DoGenerateToken.Start");
+        logger.info("UtilLog.DoGenerateToken.Start");
         Date createdDate = clock.now();
         Date expirationDate = calculateExpirationDate(createdDate);
-        logger.info("ActionLog.DoGenerateToken.Stop.Success");
+        logger.info("UtilLog.DoGenerateToken.Stop.Success");
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)//username
@@ -86,28 +86,28 @@ public class TokenUtil {
     }
 
     private Date calculateExpirationDate(Date createdDate) {
-        logger.info("ActionLog.CalculateExpirationDate.Start");
+        logger.info("UtilLog.CalculateExpirationDate.Start");
         return new Date(createdDate.getTime() + expiration * 100);
     }
 
     public boolean isTokenValid(String token) {
-        logger.info("ActionLog.IsTokenValid.Start");
+        logger.info("UtilLog.IsTokenValid.Start");
         if (Objects.isNull(token)) {
             return false;
         }
-        logger.info("ActionLog.IsTokenValid.Stop.Success");
+        logger.info("UtilLog.IsTokenValid.Stop.Success");
         return !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
-        logger.info("ActionLog.IsTokenExpired.Start");
+        logger.info("UtilLog.IsTokenExpired.Start");
         Date expirationDate = getExpirationDateFromToken(token);
-        logger.info("ActionLog.IsTokenExpired.Stop.Success");
+        logger.info("UtilLog.IsTokenExpired.Stop.Success");
         return expirationDate.before(clock.now());
     }
 
     private Date getExpirationDateFromToken(String token) {
-        logger.info("ActionLog.GetExpirationDateFromToken.Start");
+        logger.info("UtilLog.GetExpirationDateFromToken.Start");
         return getClaimFromToken(token, Claims::getExpiration);
     }
 

@@ -1,4 +1,4 @@
-package az.gdg.msauth.service;
+package az.gdg.msauth.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.dto.UserDTO;
@@ -8,7 +8,7 @@ import az.gdg.msauth.security.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.role.Role;
 import az.gdg.msauth.security.service.AuthenticationService;
-import az.gdg.msauth.security.service.AuthenticationServiceImpl;
+import az.gdg.msauth.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

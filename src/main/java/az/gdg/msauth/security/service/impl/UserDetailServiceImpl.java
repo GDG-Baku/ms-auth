@@ -1,4 +1,4 @@
-package az.gdg.msauth.security.service;
+package az.gdg.msauth.security.service.impl;
 
 
 import az.gdg.msauth.dao.UserRepository;

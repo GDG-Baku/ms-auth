@@ -1,6 +1,5 @@
-package az.gdg.msauth.security.service;
+package az.gdg.msauth.security.service.impl;
 
-import az.gdg.msauth.controller.UserController;
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.entity.UserEntity;
 import az.gdg.msauth.exception.WrongDataException;
@@ -8,6 +7,7 @@ import az.gdg.msauth.security.dto.JwtAuthenticationRequest;
 import az.gdg.msauth.security.dto.JwtAuthenticationResponse;
 import az.gdg.msauth.security.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
+import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService{
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final TokenUtil tokenUtil;
     private final UserRepository userRepository;
