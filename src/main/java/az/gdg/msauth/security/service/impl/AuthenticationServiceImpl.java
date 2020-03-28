@@ -56,9 +56,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            logger.warn("ActionLog.AuthenticationException.User is Disabled.Catched");
-            throw new AuthenticationException("User is disabled", e);
         } catch (BadCredentialsException e) {
             logger.warn("ActionLog.AuthenticationException.Bad Credentials.Catched");
             throw new AuthenticationException("Bad credentials", e);

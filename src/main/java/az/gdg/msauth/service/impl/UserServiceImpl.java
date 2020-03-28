@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
-        UserEntity customerEntity = UserEntity
+        UserEntity userEntity = UserEntity
                 .builder()
                 .name(userDTO.getName())
                 .surname(userDTO.getSurname())
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
                 .role(Role.ROLE_USER)
                 .build();
 
-        userRepository.save(customerEntity);
+        userRepository.save(userEntity);
         logger.info("ActionLog.Sign up user.Stop.Success");
 
     }
@@ -55,7 +55,9 @@ public class UserServiceImpl implements UserService {
     public String getCustomerIdByEmail(String token, String email) {
         logger.info("ActionLog.GetCustomerIdByEmail.Start");
         UserInfo userInfo = authenticationService.validateToken(token);
+        System.out.println("1" + userInfo);
         String userRole = userInfo.getRole();
+        System.out.println("2" + userRole);
         if (!userRole.equals("ROLE_ADMIN")) {
             logger.error("ActionLog.AuthenticationException.Thrown");
             throw new AuthenticationException("You do not have rights for access");
