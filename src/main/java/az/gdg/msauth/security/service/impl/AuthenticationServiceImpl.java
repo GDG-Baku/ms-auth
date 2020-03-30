@@ -38,15 +38,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         logger.info("ActionLog.CreateAuthenticationToken.Start");
 
         authenticate(request.getEmail(), request.getPassword());
-        UserEntity userEntity = userRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> new WrongDataException("Email is not registered"));
-        String userId = userEntity.getId().toString();
-        String role = userEntity.getRole().toString();
-        String token = tokenUtil.generateToken(request.getEmail(), userId, role);
+        UserEntity userEntity = userRepository.findByEmail(request.getEmail());
 
-        logger.info("ActionLog.CreateAuthenticationToken.Stop.Success");
-        return new JwtAuthenticationResponse(token);
+        if (userEntity != null) {
+            String userId = userEntity.getId().toString();
+            String role = userEntity.getRole().toString();
+            String token = tokenUtil.generateToken(request.getEmail(), userId, role);
+
+            logger.info("ActionLog.CreateAuthenticationToken.Stop.Success");
+            return new JwtAuthenticationResponse(token);
+        } else {
+            logger.info("ActionLog.CreateAuthenticationToken.Stop.WrongDataException.Thrown");
+            throw new WrongDataException("Email is not registered");
+        }
+
     }
 
     public void authenticate(String username, String password) {
@@ -57,7 +62,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (BadCredentialsException e) {
-            logger.warn("ActionLog.AuthenticationException.Bad Credentials.Catched");
+            logger.error("ActionLog.AuthenticationException.Bad Credentials.Thrown");
+
             throw new AuthenticationException("Bad credentials", e);
         }
 

@@ -24,10 +24,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserEntity user = repository
-                .findByEmail(username)
-                .orElseThrow(() -> new WrongDataException("No such email is registered"));
-        return buildSecurityUser(user);
+        UserEntity user = repository.findByEmail(username);
+        if (user != null) {
+            return buildSecurityUser(user);
+        } else {
+            throw new WrongDataException("No such email is registered");
+        }
+
     }
 
     private CustomUserDetail buildSecurityUser(UserEntity user) {

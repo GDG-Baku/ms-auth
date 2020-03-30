@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,8 +29,8 @@ public class UserServiceImpl implements UserService {
 
     public void signUp(UserDTO userDTO) {
         logger.info("ActionLog.Sign up user.Start");
-        Optional<UserEntity> checkedEmail = userRepository.findByEmail(userDTO.getEmail());
-        if (checkedEmail.isPresent()) {
+        UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
+        if (checkedEmail != null) {
             logger.error("ActionLog.WrongDataException.Thrown");
             throw new WrongDataException("This email already exists");
         }
@@ -55,18 +54,20 @@ public class UserServiceImpl implements UserService {
     public String getCustomerIdByEmail(String token, String email) {
         logger.info("ActionLog.GetCustomerIdByEmail.Start");
         UserInfo userInfo = authenticationService.validateToken(token);
-        System.out.println("1" + userInfo);
         String userRole = userInfo.getRole();
-        System.out.println("2" + userRole);
         if (!userRole.equals("ROLE_ADMIN")) {
             logger.error("ActionLog.AuthenticationException.Thrown");
             throw new AuthenticationException("You do not have rights for access");
         }
-        UserEntity userEntity = userRepository
-                .findByEmail(email)
-                .orElseThrow(() -> new WrongDataException("No such email is found"));
 
-        logger.info("ActionLog.GetCustomerIdByEmail.Stop.Success");
-        return userEntity.getId().toString();
+        UserEntity foundUser = userRepository.findByEmail(email);
+        if (foundUser != null) {
+            logger.info("ActionLog.GetCustomerIdByEmail.Stop.Success");
+            return foundUser.getId().toString();
+        } else {
+            logger.error("ActionLog.WrongDataException.Thrown");
+            throw new WrongDataException("No such email is found");
+        }
+
     }
 }
