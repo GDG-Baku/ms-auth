@@ -1,8 +1,8 @@
 package az.gdg.msauth.security.service;
 
-import az.gdg.msauth.security.dto.JwtAuthenticationRequest;
-import az.gdg.msauth.security.dto.JwtAuthenticationResponse;
-import az.gdg.msauth.security.dto.UserInfo;
+import az.gdg.msauth.security.model.dto.JwtAuthenticationRequest;
+import az.gdg.msauth.security.model.dto.JwtAuthenticationResponse;
+import az.gdg.msauth.security.model.dto.UserInfo;
 
 public interface AuthenticationService {
 

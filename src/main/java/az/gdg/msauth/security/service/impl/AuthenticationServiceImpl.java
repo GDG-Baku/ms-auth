@@ -1,11 +1,11 @@
 package az.gdg.msauth.security.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
-import az.gdg.msauth.entity.UserEntity;
+import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.exception.WrongDataException;
-import az.gdg.msauth.security.dto.JwtAuthenticationRequest;
-import az.gdg.msauth.security.dto.JwtAuthenticationResponse;
-import az.gdg.msauth.security.dto.UserInfo;
+import az.gdg.msauth.security.model.dto.JwtAuthenticationRequest;
+import az.gdg.msauth.security.model.dto.JwtAuthenticationResponse;
+import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
@@ -40,16 +39,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticate(request.getEmail(), request.getPassword());
         UserEntity userEntity = userRepository.findByEmail(request.getEmail());
 
-        if (userEntity != null) {
+        if (userEntity != null && userEntity.getStatus().toString().equals("CONFIRMED")) {
             String userId = userEntity.getId().toString();
             String role = userEntity.getRole().toString();
-            String token = tokenUtil.generateToken(request.getEmail(), userId, role);
+            String status = userEntity.getStatus().toString();
+            String token = tokenUtil.generateToken(request.getEmail(),userId,role,status);
 
             logger.info("ActionLog.CreateAuthenticationToken.Stop.Success");
             return new JwtAuthenticationResponse(token);
         } else {
             logger.info("ActionLog.CreateAuthenticationToken.Stop.WrongDataException.Thrown");
-            throw new WrongDataException("Email is not registered");
+            throw new WrongDataException("Email is not registered or you are not confirmed by admins");
         }
 
     }

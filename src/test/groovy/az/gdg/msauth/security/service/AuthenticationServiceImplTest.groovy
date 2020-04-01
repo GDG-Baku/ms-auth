@@ -1,15 +1,17 @@
 package az.gdg.msauth.security.service
 
 import az.gdg.msauth.dao.UserRepository
-import az.gdg.msauth.entity.UserEntity
 import az.gdg.msauth.exception.WrongDataException
-import az.gdg.msauth.security.dto.JwtAuthenticationRequest
-import az.gdg.msauth.security.dto.JwtAuthenticationResponse
-import az.gdg.msauth.security.dto.UserInfo
-import az.gdg.msauth.security.role.Role
+import az.gdg.msauth.model.entity.UserEntity
+import az.gdg.msauth.security.model.Role
+import az.gdg.msauth.security.model.Status
+import az.gdg.msauth.security.model.dto.JwtAuthenticationRequest
+import az.gdg.msauth.security.model.dto.JwtAuthenticationResponse
+import az.gdg.msauth.security.model.dto.UserInfo
 import az.gdg.msauth.security.service.impl.AuthenticationServiceImpl
 import az.gdg.msauth.security.util.TokenUtil
 import org.springframework.security.authentication.AuthenticationManager
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Title
 
@@ -29,10 +31,9 @@ class AuthenticationServiceImplTest extends Specification {
         authenticationServiceImp = new AuthenticationServiceImpl(tokenUtil, userRepository, authenticationManager)
     }
 
-
     def "return userinfo in validateToken() method if token is valid"() {
         given:
-            def userInfo = new UserInfo("asdfghjkl", "ROLE_USER", "1", "admin@mail.ru")
+            def userInfo = new UserInfo("admin@mail.ru", "ROLE_USER","RECIEVED","1","asdfghjkl" )
             String token = "asdfghjkl"
             1 * tokenUtil.isTokenValid(token) >> true
 
@@ -59,8 +60,8 @@ class AuthenticationServiceImplTest extends Specification {
 
     def "don't throw WrongDataException in createAuthenticationToken() method if userEntity is found and return token"() {
         given:
-            def request = new JwtAuthenticationRequest("asdfg@mail.ru", "12345")
-            def entity = new UserEntity(1, null, null, null, null, null, "ROLE_USER" as Role, null, null)
+            def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
+            def entity = new UserEntity(1, null, null, null, null, null, "ROLE_USER" as Role, "CONFIRMED" as Status, null,null)
             def token = "asdfghjklyutryrwrtututu"
             1 * userRepository.findByEmail(request.getEmail()) >> entity
 
@@ -74,9 +75,43 @@ class AuthenticationServiceImplTest extends Specification {
 
     }
 
+    def "don't throw WrongDataException in createAuthenticationToken() method if status is CONFIRMED and return token"() {
+        given:
+            def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
+            def entity = new UserEntity(1, null, null, null, null, null, "ROLE_USER" as Role, "CONFIRMED" as Status, null,null)
+            def token = "asdfghjklyutryrwrtututu"
+            2 * userRepository.findByEmail(request.getEmail()) >> entity
+            userRepository.findByEmail(request.getEmail()).getStatus().toString().equals("CONFIRMED") >> true
+
+
+        when:
+            authenticationServiceImp.createAuthenticationToken(request)
+
+        then:
+            new JwtAuthenticationResponse(token) >> token
+            notThrown(WrongDataException)
+
+    }
+
+    def "throw WrongDataException in createAuthenticationToken() method if status is not CONFIRMED"() {
+        given:
+            def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
+            def entity = new UserEntity(1, null, null, null, null, null, "ROLE_USER" as Role, "REGISTERED" as Status, null,null)
+            2 * userRepository.findByEmail(request.getEmail()) >> entity
+            userRepository.findByEmail(request.getEmail()).getStatus().toString().equals("CONFIRMED") >> false
+
+
+        when:
+            authenticationServiceImp.createAuthenticationToken(request)
+
+        then:
+            thrown(WrongDataException)
+
+    }
+
     def "throw WrongDataException in createAuthenticationToken() method if userEntity is not found"() {
         given:
-            def request = new JwtAuthenticationRequest("asdfg@mail.ru", "12345")
+            def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
             def entity = null
             1 * userRepository.findByEmail(request.getEmail()) >> entity
 

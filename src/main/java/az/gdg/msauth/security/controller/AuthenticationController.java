@@ -1,9 +1,8 @@
 package az.gdg.msauth.security.controller;
 
-import az.gdg.msauth.controller.UserController;
-import az.gdg.msauth.security.dto.JwtAuthenticationRequest;
-import az.gdg.msauth.security.dto.JwtAuthenticationResponse;
-import az.gdg.msauth.security.dto.UserInfo;
+import az.gdg.msauth.security.model.dto.JwtAuthenticationRequest;
+import az.gdg.msauth.security.model.dto.JwtAuthenticationResponse;
+import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.service.AuthenticationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

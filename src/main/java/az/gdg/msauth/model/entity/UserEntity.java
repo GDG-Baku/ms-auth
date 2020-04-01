@@ -1,6 +1,7 @@
-package az.gdg.msauth.entity;
+package az.gdg.msauth.model.entity;
 
-import az.gdg.msauth.security.role.Role;
+import az.gdg.msauth.security.model.Role;
+import az.gdg.msauth.security.model.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +52,10 @@ public class UserEntity {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column(name = "created_at")
     @CreationTimestamp

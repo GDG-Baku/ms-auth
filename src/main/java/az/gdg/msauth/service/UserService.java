@@ -1,6 +1,6 @@
 package az.gdg.msauth.service;
 
-import az.gdg.msauth.dto.UserDTO;
+import az.gdg.msauth.model.dto.UserDTO;
 
 public interface UserService {
 

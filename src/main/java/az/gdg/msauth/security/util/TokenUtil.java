@@ -1,7 +1,6 @@
 package az.gdg.msauth.security.util;
 
-import az.gdg.msauth.security.controller.AuthenticationController;
-import az.gdg.msauth.security.dto.UserInfo;
+import az.gdg.msauth.security.model.dto.UserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Clock;
 import io.jsonwebtoken.Jwts;
@@ -35,11 +34,13 @@ public class TokenUtil {
         String userId = getClaimFromToken(token, Claims::getId);
         String email = getClaimFromToken(token, Claims::getSubject);
         String role = getAllClaimsFromToken(token).get("role").toString();
+        String status = getAllClaimsFromToken(token).get("status").toString();
         logger.info("UtilLog.GetUserInfoFromToken.Stop.Success");
         return UserInfo
                 .builder()
                 .token(token)
                 .role(role)
+                .status(status)
                 .userId(userId)
                 .email(email)
                 .build();
@@ -60,11 +61,12 @@ public class TokenUtil {
                 .getBody();
     }
 
-    public String generateToken(String username, String userId, String role) {
+    public String generateToken(String username, String userId, String role, String status) {
         logger.info("UtilLog.GenerateToken.Start");
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role);
+        claims.put("status",status);
         logger.info("UtilLog.GenerateToken.Stop.Success");
         return doGenerateToken(claims, username, userId);
     }

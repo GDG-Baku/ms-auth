@@ -1,4 +1,4 @@
-package az.gdg.msauth.security.role;
+package az.gdg.msauth.security.model;
 
 import org.springframework.security.core.GrantedAuthority;
 

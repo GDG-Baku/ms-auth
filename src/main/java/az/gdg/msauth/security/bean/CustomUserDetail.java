@@ -1,6 +1,6 @@
 package az.gdg.msauth.security.bean;
 
-import az.gdg.msauth.security.role.Role;
+import az.gdg.msauth.security.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;

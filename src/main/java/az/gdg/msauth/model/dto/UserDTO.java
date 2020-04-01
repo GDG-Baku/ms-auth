@@ -1,4 +1,4 @@
-package az.gdg.msauth.dto;
+package az.gdg.msauth.model.dto;
 
 import az.gdg.msauth.validation.user.UserConstraint;
 import lombok.AllArgsConstructor;

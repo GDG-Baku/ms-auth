@@ -1,6 +1,6 @@
 package az.gdg.msauth.validation.user;
 
-import az.gdg.msauth.dto.UserDTO;
+import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.util.CheckViolationHelper;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +27,7 @@ public class UserValidator implements
     }
 
     private boolean isNameValid(String name, ConstraintValidatorContext context) {
-        System.out.println("name in validator "+ name);
-        if(name == null || name.isEmpty() || !name.matches("[A-Z][a-z]*")){
+        if (name == null || name.isEmpty() || !name.matches("[A-Z][a-z]*")) {
             violationHelper.addViolation(context,"name","Name is not valid");
             return false;
         }
@@ -36,7 +35,7 @@ public class UserValidator implements
     }
 
     private boolean isSurnameValid(String surname, ConstraintValidatorContext context) {
-        if(surname == null || surname.isEmpty() || !surname.matches("[A-Z][a-z]*")){
+        if (surname == null || surname.isEmpty() || !surname.matches("[A-Z][a-z]*")) {
             violationHelper.addViolation(context,"surname","Surname is not valid");
             return false;
         }
@@ -44,7 +43,9 @@ public class UserValidator implements
     }
 
     private boolean isEmailValid(String email, ConstraintValidatorContext context) {
-        if(email == null || email.isEmpty() || !email.matches("/^([a-zA-Z0-9\\.-]+)@([a-zA-Z0-9-]+).([a-z]{2,8})(.[a-z]{2,8})?$/")){
+        if (email == null ||
+                email.isEmpty() ||
+                !email.matches("^([a-zA-Z0-9_\\\\.-]+)@([a-zA-Z0-9-]+).([a-z]{2,8})(.[a-z]{2,8})?$")) {
             violationHelper.addViolation(context,"email","Email is not valid");
             return false;
         }
@@ -52,7 +53,9 @@ public class UserValidator implements
     }
 
     private boolean isPasswordValid(String password, ConstraintValidatorContext context) {
-        if(password == null || password.isEmpty()){
+        if (password == null ||
+                password.isEmpty() ||
+                !password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[.@#$%^&+=])(?=\\S+$).{8,}$")) {
             violationHelper.addViolation(context,"password","Password is not valid");
             return false;
         }

@@ -1,4 +1,4 @@
-package az.gdg.msauth.security.dto;
+package az.gdg.msauth.security.model.dto;
 
 import lombok.Getter;
 

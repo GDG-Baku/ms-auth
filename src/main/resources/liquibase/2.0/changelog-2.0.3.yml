@@ -24,6 +24,9 @@ databaseChangeLog:
                   name: role
                   value: ROLE_ADMIN
               - column:
+                  name: status
+                  value: CONFIRMED
+              - column:
                   name: surname
                   value: Hajiyev
               - column:

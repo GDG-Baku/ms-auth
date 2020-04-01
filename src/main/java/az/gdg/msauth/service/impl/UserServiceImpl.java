@@ -1,12 +1,13 @@
 package az.gdg.msauth.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
-import az.gdg.msauth.dto.UserDTO;
-import az.gdg.msauth.entity.UserEntity;
+import az.gdg.msauth.model.dto.UserDTO;
+import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.exception.WrongDataException;
-import az.gdg.msauth.security.dto.UserInfo;
+import az.gdg.msauth.security.model.Status;
+import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
-import az.gdg.msauth.security.role.Role;
+import az.gdg.msauth.security.model.Role;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.service.UserService;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
                 .email(userDTO.getEmail())
                 .password(password)
                 .role(Role.ROLE_USER)
+                .status(Status.REGISTERED)
                 .build();
 
         userRepository.save(userEntity);
