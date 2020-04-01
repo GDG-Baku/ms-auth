@@ -1,6 +1,6 @@
 package az.gdg.msauth.dto;
 
-import az.gdg.msauth.security.role.Role;
+import az.gdg.msauth.validation.user.UserConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@UserConstraint
 public class UserDTO {
 
-    private String username;
     private String email;
     private String name;
     private String surname;
     private String password;
-    private Role role;
 }

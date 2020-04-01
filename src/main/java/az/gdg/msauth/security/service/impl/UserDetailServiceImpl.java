@@ -1,6 +1,5 @@
 package az.gdg.msauth.security.service.impl;
 
-
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.entity.UserEntity;
 import az.gdg.msauth.exception.WrongDataException;

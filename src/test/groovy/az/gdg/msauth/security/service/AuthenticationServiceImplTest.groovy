@@ -32,101 +32,101 @@ class AuthenticationServiceImplTest extends Specification {
 
     def "return userinfo in validateToken() method if token is valid"() {
         given:
-        def userInfo = new UserInfo("asdfghjkl", "ROLE_USER", "1", "admin@mail.ru")
-        String token = "asdfghjkl"
-        1 * tokenUtil.isTokenValid(token) >> true
+            def userInfo = new UserInfo("asdfghjkl", "ROLE_USER", "1", "admin@mail.ru")
+            String token = "asdfghjkl"
+            1 * tokenUtil.isTokenValid(token) >> true
 
         when:
-        authenticationServiceImp.validateToken(token)
+            authenticationServiceImp.validateToken(token)
 
         then:
-        tokenUtil.getUserInfoFromToken(token) >> userInfo
+            tokenUtil.getUserInfoFromToken(token) >> userInfo
 
     }
 
     def "don't return userinfo in validateToken() method if token is invalid"() {
         given:
-        String token = "asdfghjkl"
-        1 * tokenUtil.isTokenValid(token) >> false
+            String token = "asdfghjkl"
+            1 * tokenUtil.isTokenValid(token) >> false
 
         when:
-        authenticationServiceImp.validateToken(token)
+            authenticationServiceImp.validateToken(token)
 
         then:
-        tokenUtil.getUserInfoFromToken(token) >> null
+            tokenUtil.getUserInfoFromToken(token) >> null
 
     }
 
     def "don't throw WrongDataException in createAuthenticationToken() method if userEntity is found and return token"() {
         given:
-        def request = new JwtAuthenticationRequest("asdfg@mail.ru", "12345")
-        def entity = new UserEntity(1, null, null, null, null, null, "ROLE_USER" as Role, null, null)
-        def token = "asdfghjklyutryrwrtututu"
-        1 * userRepository.findByEmail(request.getEmail()) >> entity
+            def request = new JwtAuthenticationRequest("asdfg@mail.ru", "12345")
+            def entity = new UserEntity(1, null, null, null, null, null, "ROLE_USER" as Role, null, null)
+            def token = "asdfghjklyutryrwrtututu"
+            1 * userRepository.findByEmail(request.getEmail()) >> entity
 
 
         when:
-        authenticationServiceImp.createAuthenticationToken(request)
+            authenticationServiceImp.createAuthenticationToken(request)
 
         then:
-        new JwtAuthenticationResponse(token) >> token
-        notThrown(WrongDataException)
+            new JwtAuthenticationResponse(token) >> token
+            notThrown(WrongDataException)
 
     }
 
     def "throw WrongDataException in createAuthenticationToken() method if userEntity is not found"() {
         given:
-        def request = new JwtAuthenticationRequest("asdfg@mail.ru", "12345")
-        def entity = null
-        1 * userRepository.findByEmail(request.getEmail()) >> entity
+            def request = new JwtAuthenticationRequest("asdfg@mail.ru", "12345")
+            def entity = null
+            1 * userRepository.findByEmail(request.getEmail()) >> entity
 
         when:
-        authenticationServiceImp.createAuthenticationToken(request)
+            authenticationServiceImp.createAuthenticationToken(request)
 
         then:
-        thrown(WrongDataException)
+            thrown(WrongDataException)
 
     }
 
     def "throw exception in authenticate() method if username is null"() {
         given:
-        def username = null
-        def password = "pw"
-        0 * Objects.requireNonNull(username)
+            def username = null
+            def password = "pw"
+            0 * Objects.requireNonNull(username)
         when:
-        authenticationServiceImp.authenticate(username, password)
+            authenticationServiceImp.authenticate(username, password)
 
         then:
-        thrown(NullPointerException)
+            thrown(NullPointerException)
 
     }
 
     def "throw exception in authenticate() method if password is null"() {
         given:
-        def username = "example@mail.ru"
-        def password = null
-        0 * Objects.requireNonNull(password)
+            def username = "example@mail.ru"
+            def password = null
+            0 * Objects.requireNonNull(password)
 
         when:
-        authenticationServiceImp.authenticate(username, password)
+            authenticationServiceImp.authenticate(username, password)
 
         then:
-        thrown(NullPointerException)
+            thrown(NullPointerException)
 
     }
 
     def "don't throw exception in authenticate() method if password and username are not null"() {
         given:
-        def username = "example@mail.ru"
-        def password = "12345"
-        0 * Objects.requireNonNull(password)
-        0 * Objects.requireNonNull(username)
+            def username = "example@mail.ru"
+            def password = "12345"
+            0 * Objects.requireNonNull(password)
+            0 * Objects.requireNonNull(username)
 
         when:
-        authenticationServiceImp.authenticate(username, password)
+            authenticationServiceImp.authenticate(username, password)
 
         then:
-        notThrown(NullPointerException)
+            notThrown(NullPointerException)
 
     }
 

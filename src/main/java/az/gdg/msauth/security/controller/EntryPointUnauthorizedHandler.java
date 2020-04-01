@@ -14,6 +14,7 @@ public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                          AuthenticationException e) throws IOException, ServletException {
-        httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Login or password is not correct.Please try again.");
+        httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                "Login or password is not correct.Please try again.");
     }
 }
