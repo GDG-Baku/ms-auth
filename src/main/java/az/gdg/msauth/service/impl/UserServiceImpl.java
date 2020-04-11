@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,14 +37,6 @@ public class UserServiceImpl implements UserService {
 
     public void signUp(UserDTO userDTO) {
         logger.info("ActionLog.Sign up user.Start");
-
-        MailDTO mail = new MailDTO().builder()
-                .mailTo(userDTO.getEmail())
-                .mailSubject("Your registration letter")
-                .mailBody("<html><body>You are registered for our app</body></html>")
-                .build();
-
-        emailService.sendToQueue(mail);
 
         UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
         if (checkedEmail != null) {
@@ -63,6 +57,14 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(userEntity);
+
+        MailDTO mail = new MailDTO().builder()
+                .mailTo(Collections.singletonList(userDTO.getEmail()))
+                .mailSubject("Your registration letter")
+                .mailBody("<h2>" + "You are registered for our app" + "</h2>")
+                .build();
+
+        emailService.sendToQueue(mail);
         logger.info("ActionLog.Sign up user.Stop.Success");
 
     }
