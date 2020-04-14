@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
                 .username(userDTO.getEmail())
                 .email(userDTO.getEmail())
                 .password(password)
+                .verifyCode(code)
                 .role(Role.ROLE_USER)
                 .status(Status.REGISTERED)
                 .build();
