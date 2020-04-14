@@ -79,7 +79,7 @@ class UserServiceImplTest extends Specification {
     def "don't throw exception in getCustomerIdByEmail() method if user's role is  admin"() {
         given:
             def userInfo = new UserInfo("asdfghjkl", "ROLE_ADMIN","CONFIRMED","1", "admin@mail.ru")
-            def entity = new UserEntity(1, null, null, null, null, null, null, null, null,null)
+            def entity = new UserEntity(1, null, null, null, null, null,null, null, null, null,null)
             def token = "asdfghjkl"
             def email = "admin@mail.ru"
 
@@ -97,7 +97,7 @@ class UserServiceImplTest extends Specification {
     def "don't throw exception in getCustomerIdByEmail() method if email is found and return user's id"() {
         given:
             def userInfo = new UserInfo("admin@mail.ru", "ROLE_ADMIN","CONFIRMED","1","asdfghjkl" )
-            def entity = new UserEntity(1, null, null, null, null, null, null, null, null,null)
+            def entity = new UserEntity(1, null, null, null,null, null, null, null, null, null,null)
             def token = "asdfghjkl"
             def email = "admin@mail.ru"
 

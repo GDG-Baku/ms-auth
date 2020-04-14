@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.UUID;
 
 
 @Service
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
+        String code = UUID.randomUUID().toString();
         UserEntity userEntity = UserEntity
                 .builder()
                 .name(userDTO.getName())
@@ -61,7 +63,12 @@ public class UserServiceImpl implements UserService {
         MailDTO mail = new MailDTO().builder()
                 .mailTo(Collections.singletonList(userDTO.getEmail()))
                 .mailSubject("Your registration letter")
-                .mailBody("<h2>" + "You are registered for our app" + "</h2>")
+                .mailBody("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+                        "<a href=" +
+                        "https://ms-gdg-auth.herokuapp.com/user/verify?email=" + userDTO.getEmail() +
+                        "&code=" + code + ">" +
+                        "https://ms-gdg-auth.herokuapp.com/user/verify?email=" + userDTO.getEmail() +
+                        "&code=" + code + "</a>")
                 .build();
 
         emailService.sendToQueue(mail);
@@ -85,6 +92,60 @@ public class UserServiceImpl implements UserService {
         } else {
             logger.error("ActionLog.WrongDataException.Thrown");
             throw new WrongDataException("No such email is found");
+        }
+
+    }
+
+    @Override
+    public void verifyAccount(String email, String code) {
+
+        UserEntity user = userRepository.findByEmail(email);
+
+        if (user != null) {
+            if (user.getVerifyCode().equals(code)) {
+                user.setStatus(Status.CONFIRMED);
+                user.setVerifyCode(UUID.randomUUID().toString());
+                userRepository.save(user);
+            } else {
+                throw new WrongDataException("Verification code is not valid!");
+            }
+        } else {
+            throw new WrongDataException("No found such user");
+        }
+
+    }
+
+    @Override
+    public void sendResetPasswordLinkToMail(String email) {
+
+        UserEntity user = userRepository.findByEmail(email);
+
+        if (user != null) {
+            MailDTO mail = new MailDTO().builder()
+                    .mailTo(Collections.singletonList(email))
+                    .mailSubject("Your reset password letter")
+                    .mailBody("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+                            "https://localhost:8080/reset")
+                    .build();
+
+            emailService.sendToQueue(mail);
+        } else {
+            throw new WrongDataException("No such user found!");
+        }
+
+    }
+
+    @Override
+    public void resetPassword(String email, String password) {
+
+        UserEntity user = userRepository.findByEmail(email);
+
+        if (user != null) {
+            String newPassword = new BCryptPasswordEncoder().encode(password);
+            user.setPassword(newPassword);
+            userRepository.save(user);
+        } else {
+            throw new WrongDataException("No found such user!");
         }
 
     }

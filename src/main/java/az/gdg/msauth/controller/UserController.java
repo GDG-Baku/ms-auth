@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,6 +62,23 @@ public class UserController {
         return userService.getCustomerIdByEmail(token, email);
     }
 
+    @ApiOperation("verify account when user registers")
+    @GetMapping(value = "/verify")
+    public String verifyAccount(@RequestParam("email") String email, @RequestParam("code") String code) {
+        userService.verifyAccount(email, code);
+        return "Your account is verified, now you can log in";
+    }
 
+    @ApiOperation("send reset password link to mail")
+    @GetMapping(value = "/forgot")
+    public void sendResetPasswordLinkToMail(@RequestParam("email") String email) {
+        userService.sendResetPasswordLinkToMail(email);
+    }
+
+    @ApiOperation("reset password")
+    @GetMapping(value = "/reset")
+    public void resetPassword(@RequestParam("email") String email, @RequestParam("password") String password) {
+        userService.resetPassword(email, password);
+    }
 
 }
