@@ -76,9 +76,9 @@ public class UserController {
     }
 
     @ApiOperation("reset password")
-    @PostMapping(value = "/password/reset")
-    public void resetPassword(@RequestParam("email") String email, @RequestParam("password") String password) {
-        userService.resetPassword(email, password);
+    @GetMapping(value = "/password/reset")
+    public void resetPassword(@RequestParam("token") String token, @RequestParam("password") String password) {
+        userService.resetPassword(token, password);
     }
 
 }

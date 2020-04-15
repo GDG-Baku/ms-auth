@@ -10,6 +10,7 @@ import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.model.Role;
 import az.gdg.msauth.security.service.AuthenticationService;
+import az.gdg.msauth.security.util.TokenUtil;
 import az.gdg.msauth.service.EmailService;
 import az.gdg.msauth.service.UserService;
 import org.slf4j.Logger;
@@ -25,15 +26,17 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final TokenUtil tokenUtil;
     private final AuthenticationService authenticationService;
     private final EmailService emailService;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository, AuthenticationService authenticationService,
-                           EmailService emailService) {
+                           EmailService emailService, TokenUtil tokenUtil) {
         this.userRepository = userRepository;
         this.authenticationService = authenticationService;
         this.emailService = emailService;
+        this.tokenUtil = tokenUtil;
     }
 
     public void signUp(UserDTO userDTO) {
@@ -54,7 +57,7 @@ public class UserServiceImpl implements UserService {
                 .username(userDTO.getEmail())
                 .email(userDTO.getEmail())
                 .password(password)
-                .verifyCode(code)
+                .accountVerificationCode(code)
                 .role(Role.ROLE_USER)
                 .status(Status.REGISTERED)
                 .build();
@@ -103,9 +106,9 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
-            if (user.getVerifyCode().equals(code)) {
+            if (user.getAccountVerificationCode().equals(code)) {
                 user.setStatus(Status.CONFIRMED);
-                user.setVerifyCode(UUID.randomUUID().toString());
+                user.setAccountVerificationCode(UUID.randomUUID().toString());
                 userRepository.save(user);
             } else {
                 throw new WrongDataException("Verification code is not valid!");
@@ -122,11 +125,13 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
+
+            String token = tokenUtil.generateTokenForResetPasswordURL(email);
             MailDTO mail = new MailDTO().builder()
                     .mailTo(Collections.singletonList(email))
                     .mailSubject("Your reset password letter")
                     .mailBody("<h2>" + "Verify Account" + "</h2>" + "</br>" +
-                            "https://localhost:8080/reset")
+                            "https://localhost:8080/reset.html/" + token)
                     .build();
 
             emailService.sendToQueue(mail);
@@ -137,7 +142,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(String email, String password) {
+    public void resetPassword(String token, String password) {
+
+        String email = tokenUtil.getEmailFromResetPasswordToken(token);
 
         UserEntity user = userRepository.findByEmail(email);
 

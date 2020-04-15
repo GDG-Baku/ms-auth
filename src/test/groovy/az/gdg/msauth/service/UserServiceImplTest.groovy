@@ -7,6 +7,7 @@ import az.gdg.msauth.model.entity.UserEntity
 import az.gdg.msauth.security.exception.AuthenticationException
 import az.gdg.msauth.security.model.dto.UserInfo
 import az.gdg.msauth.security.service.impl.AuthenticationServiceImpl
+import az.gdg.msauth.security.util.TokenUtil
 import az.gdg.msauth.service.impl.EmailServiceImpl
 import az.gdg.msauth.service.impl.UserServiceImpl
 import spock.lang.Ignore
@@ -20,12 +21,14 @@ class UserServiceImplTest extends Specification {
     AuthenticationServiceImpl authenticationServiceImpl
     UserServiceImpl userService
     EmailServiceImpl emailServiceImpl
+    TokenUtil tokenUtil
 
     def setup() {
         userRepository = Mock()
         authenticationServiceImpl = Mock()
         emailServiceImpl = Mock()
-        userService = new UserServiceImpl(userRepository, authenticationServiceImpl,emailServiceImpl)
+        tokenUtil = Mock()
+        userService = new UserServiceImpl(userRepository, authenticationServiceImpl,emailServiceImpl,tokenUtil)
     }
 
     def "doesn't throw exception in signUp() method if email doesn't exist in database"() {
