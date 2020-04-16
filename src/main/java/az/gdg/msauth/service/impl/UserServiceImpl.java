@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void verifyAccount(String email, String code) {
-
+        logger.info("ActionLog.VerifyAccount.Start");
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
@@ -111,17 +111,21 @@ public class UserServiceImpl implements UserService {
                 user.setAccountVerificationCode(UUID.randomUUID().toString());
                 userRepository.save(user);
             } else {
+                logger.error("ActionLog.WrongDataException.Thrown");
                 throw new WrongDataException("Verification code is not valid!");
             }
         } else {
+            logger.error("ActionLog.WrongDataException.Thrown");
             throw new WrongDataException("No found such user");
         }
+
+        logger.info("ActionLog.VerifyAccount.Stop.Success");
 
     }
 
     @Override
     public void sendResetPasswordLinkToMail(String email) {
-
+        logger.info("ActionLog.SendResetPasswordLinkToMail.Start");
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
@@ -136,14 +140,17 @@ public class UserServiceImpl implements UserService {
 
             emailService.sendToQueue(mail);
         } else {
+            logger.error("ActionLog.WrongDataException.Thrown");
             throw new WrongDataException("No such user found!");
         }
+
+        logger.info("ActionLog.SendResetPasswordLinkToMail.Stop.Success");
 
     }
 
     @Override
     public void resetPassword(String token, String password) {
-
+        logger.info("ActionLog.ResetPassword.Start");
         String email = tokenUtil.getEmailFromResetPasswordToken(token);
 
         UserEntity user = userRepository.findByEmail(email);
@@ -153,8 +160,11 @@ public class UserServiceImpl implements UserService {
             user.setPassword(newPassword);
             userRepository.save(user);
         } else {
+            logger.info("ActionLog.WrongDataException.Thrown");
             throw new WrongDataException("No found such user!");
         }
+
+        logger.info("ActionLog.ResetPassword.Stop.Success");
 
     }
 }

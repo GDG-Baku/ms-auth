@@ -65,20 +65,26 @@ public class UserController {
     @ApiOperation("verify account when user registers")
     @GetMapping(value = "/verify/account")
     public String verifyAccount(@RequestParam("email") String email, @RequestParam("code") String code) {
+        logger.debug("VerifyAccount start");
         userService.verifyAccount(email, code);
+        logger.debug("VerifyAccount end");
         return "Your account is verified, now you can log in";
     }
 
     @ApiOperation("send reset password link to mail")
     @GetMapping(value = "/password/forgot")
     public void sendResetPasswordLinkToMail(@RequestParam("email") String email) {
+        logger.debug("SendResetPasswordLinkToMail start");
         userService.sendResetPasswordLinkToMail(email);
+        logger.debug("SendResetPasswordLinkToMail stop");
     }
 
     @ApiOperation("reset password")
     @GetMapping(value = "/password/reset")
     public void resetPassword(@RequestParam("token") String token, @RequestParam("password") String password) {
+        logger.debug("ResetPassword start");
         userService.resetPassword(token, password);
+        logger.debug("ResetPassword stop");
     }
 
 }
