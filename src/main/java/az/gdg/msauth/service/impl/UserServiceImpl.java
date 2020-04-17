@@ -69,9 +69,9 @@ public class UserServiceImpl implements UserService {
                 .mailSubject("Your registration letter")
                 .mailBody("<h2>" + "Verify Account" + "</h2>" + "</br>" +
                         "<a href=" +
-                        "https://gdg-ms-auth.herokuapp.com/user/verify?email=" + userDTO.getEmail() +
+                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?email=" + userDTO.getEmail() +
                         "&code=" + code + ">" +
-                        "https://gdg-ms-auth.herokuapp.com/user/verify?email=" + userDTO.getEmail() +
+                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?email=" + userDTO.getEmail() +
                         "&code=" + code + "</a>")
                 .build();
 
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void verifyAccount(String email, String code) {
-        logger.info("ActionLog.VerifyAccount.Start");
+        logger.info("ActionLog.VerifyAccount.Start : email {}", email);
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendResetPasswordLinkToMail(String email) {
-        logger.info("ActionLog.SendResetPasswordLinkToMail.Start");
+        logger.info("ActionLog.SendResetPasswordLinkToMail.Start : email {}", email);
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
@@ -134,8 +134,10 @@ public class UserServiceImpl implements UserService {
             MailDTO mail = new MailDTO().builder()
                     .mailTo(Collections.singletonList(email))
                     .mailSubject("Your reset password letter")
-                    .mailBody("<h2>" + "Verify Account" + "</h2>" + "</br>" +
-                            "https://localhost:8080/reset.html/" + token)
+                    .mailBody("<h2>" + "Reset Password" + "</h2>" + "</br>" +
+                            "<a href=" +
+                            "http://localhost:5500/reset.html?token=" + token + ">" +
+                            "http://localhost:5500/reset.html?token=" + token + "</a>")
                     .build();
 
             emailService.sendToQueue(mail);

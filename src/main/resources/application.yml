@@ -28,7 +28,7 @@ spring:
     change-log: classpath:liquibase/changelog-master.yml
 jwt:
   secret: ${SECRET_KEY}
-  expiration: 6000
+  expiration: 9000
   header: X-Auth-Token
 swagger:
   enabled: true

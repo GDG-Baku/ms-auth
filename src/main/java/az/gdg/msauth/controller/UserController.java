@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @ApiOperation("verify account when user registers")
-    @GetMapping(value = "/verify")
+    @GetMapping(value = "/verify-account")
     public String verifyAccount(@RequestParam("email") String email, @RequestParam("code") String code) {
         logger.debug("VerifyAccount start");
         userService.verifyAccount(email, code);
@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @ApiOperation("send reset password link to mail")
-    @GetMapping(value = "/forgot")
+    @GetMapping(value = "/forgot-password")
     public void sendResetPasswordLinkToMail(@RequestParam("email") String email) {
         logger.debug("SendResetPasswordLinkToMail start");
         userService.sendResetPasswordLinkToMail(email);
@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @ApiOperation("reset password")
-    @GetMapping(value = "/reset")
+    @PostMapping(value = "/reset-password")
     public void resetPassword(@RequestParam("token") String token, @RequestParam("password") String password) {
         logger.debug("ResetPassword start");
         userService.resetPassword(token, password);
