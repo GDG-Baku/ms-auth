@@ -1,5 +1,6 @@
 package az.gdg.msauth.controller;
 
+import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.service.AuthenticationService;
@@ -72,7 +73,7 @@ public class UserController {
     }
 
     @ApiOperation("send reset password link to mail")
-    @PostMapping(value = "/forgot-password")
+    @GetMapping(value = "/forgot-password")
     public void sendResetPasswordLinkToMail(@RequestParam("email") String email) {
         logger.debug("SendResetPasswordLinkToMail start");
         userService.sendResetPasswordLinkToMail(email);
@@ -81,9 +82,9 @@ public class UserController {
 
     @ApiOperation("reset password")
     @PostMapping(value = "/reset-password")
-    public void resetPassword(@RequestParam("token") String token, @RequestParam("password") String password) {
+    public void resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
         logger.debug("ResetPassword start");
-        userService.resetPassword(token, password);
+        userService.resetPassword(resetPasswordDTO);
         logger.debug("ResetPassword stop");
     }
 

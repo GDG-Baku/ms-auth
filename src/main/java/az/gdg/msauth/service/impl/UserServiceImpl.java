@@ -2,6 +2,7 @@ package az.gdg.msauth.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.model.dto.MailDTO;
+import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.exception.WrongDataException;
@@ -151,14 +152,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(String token, String password) {
+    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
         logger.info("ActionLog.ResetPassword.Start");
-        String email = tokenUtil.getEmailFromResetPasswordToken(token);
+        String email = tokenUtil.getEmailFromResetPasswordToken(resetPasswordDTO.getToken());
 
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
-            String newPassword = new BCryptPasswordEncoder().encode(password);
+            String newPassword = new BCryptPasswordEncoder().encode(resetPasswordDTO.getPassword());
             user.setPassword(newPassword);
             userRepository.save(user);
         } else {
