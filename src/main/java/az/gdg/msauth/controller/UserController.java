@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @ApiOperation("send reset password link to mail")
-    @GetMapping(value = "/forgot-password")
+    @PostMapping(value = "/forgot-password")
     public void sendResetPasswordLinkToMail(@RequestParam("email") String email) {
         logger.debug("SendResetPasswordLinkToMail start");
         userService.sendResetPasswordLinkToMail(email);
