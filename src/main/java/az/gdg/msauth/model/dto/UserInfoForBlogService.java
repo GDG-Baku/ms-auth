@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserInfoForBlogService {
 
-    private String name;
-    private String surname;
-    private String imgUrl;
+    private String firstName;
+    private String lastName;
+    private String imageUrl;
 
 }
