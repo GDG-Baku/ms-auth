@@ -11,7 +11,7 @@ import az.gdg.msauth.security.model.Status;
 import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.model.Role;
-import az.gdg.msauth.security.model.dto.UserInfoForBlogService;
+import az.gdg.msauth.model.dto.UserInfoForBlogService;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
 import az.gdg.msauth.service.EmailService;

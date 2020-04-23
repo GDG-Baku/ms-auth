@@ -1,4 +1,4 @@
-package az.gdg.msauth.security.model.dto;
+package az.gdg.msauth.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

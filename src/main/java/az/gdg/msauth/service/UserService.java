@@ -2,7 +2,7 @@ package az.gdg.msauth.service;
 
 import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
-import az.gdg.msauth.security.model.dto.UserInfoForBlogService;
+import az.gdg.msauth.model.dto.UserInfoForBlogService;
 
 public interface UserService {
 
