@@ -3,6 +3,7 @@ package az.gdg.msauth.controller;
 import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.security.model.dto.UserInfo;
+import az.gdg.msauth.security.model.dto.UserInfoForBlogService;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.service.UserService;
 import io.swagger.annotations.Api;
@@ -61,6 +62,12 @@ public class UserController {
             @PathVariable(name = "email") String email) {
         logger.debug("Get Customer's id by email");
         return userService.getCustomerIdByEmail(token, email);
+    }
+
+    @ApiOperation("get user by id for blog service")
+    @GetMapping("/{userId}")
+    public UserInfoForBlogService getUserById(@PathVariable("userId") int userId) {
+        return userService.getUserById(userId);
     }
 
     @ApiOperation("verify account when user registers")

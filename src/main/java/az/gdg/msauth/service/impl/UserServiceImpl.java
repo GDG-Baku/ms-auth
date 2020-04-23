@@ -1,6 +1,7 @@
 package az.gdg.msauth.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
+import az.gdg.msauth.mapper.UserMapper;
 import az.gdg.msauth.model.dto.MailDTO;
 import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
@@ -10,6 +11,7 @@ import az.gdg.msauth.security.model.Status;
 import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.model.Role;
+import az.gdg.msauth.security.model.dto.UserInfoForBlogService;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
 import az.gdg.msauth.service.EmailService;
@@ -169,5 +171,17 @@ public class UserServiceImpl implements UserService {
 
         logger.info("ActionLog.ResetPassword.Stop.Success");
 
+    }
+
+    @Override
+    public UserInfoForBlogService getUserById(int id) {
+        UserEntity user = userRepository.findById(id).get();
+
+        if (user != null) {
+            return UserMapper.INSTANCE.entityToDto(user);
+
+        } else {
+            throw new WrongDataException("No found such user");
+        }
     }
 }
