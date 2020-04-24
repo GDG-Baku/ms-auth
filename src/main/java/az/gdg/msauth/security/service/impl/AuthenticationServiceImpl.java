@@ -34,7 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public JwtAuthenticationResponse createAuthenticationToken(JwtAuthenticationRequest request) {
-        logger.info("ActionLog.CreateAuthenticationToken.Start");
+        logger.info("ActionLog.createAuthenticationToken.start : email{}", request.getEmail());
 
         authenticate(request.getEmail(), request.getPassword());
         UserEntity userEntity = userRepository.findByEmail(request.getEmail());
@@ -45,35 +45,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String status = userEntity.getStatus().toString();
             String token = tokenUtil.generateToken(request.getEmail(), userId, role, status);
 
-            logger.info("ActionLog.CreateAuthenticationToken.Stop.Success");
+            logger.info("ActionLog.createAuthenticationToken.stop.success : email{}", request.getEmail());
             return new JwtAuthenticationResponse(token);
         } else {
-            logger.info("ActionLog.CreateAuthenticationToken.Stop.WrongDataException.Thrown");
+            logger.info("ActionLog.createAuthenticationToken.stop.WrongDataException.thrown");
             throw new WrongDataException("Email is not registered or you are not confirmed by admins");
         }
 
     }
 
     public void authenticate(String username, String password) {
-        logger.info("ActionLog.Authenticate.Start");
+        logger.info("ActionLog.authenticate.start : username{}", username);
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (BadCredentialsException e) {
-            logger.error("ActionLog.AuthenticationException.Bad Credentials.Thrown");
+            logger.error("ActionLog.AuthenticationException.bad credentials.thrown");
 
             throw new AuthenticationException("Bad credentials", e);
         }
 
-        logger.info("ActionLog.Authenticate.Stop.Success");
+        logger.info("ActionLog.authenticate.stop.success : username{}", username);
     }
 
     public UserInfo validateToken(String token) {
-        logger.info("ActionLog.ValidateToken.Start");
+        logger.info("ActionLog.validateToken.start : token{}", token);
         tokenUtil.isTokenValid(token);
-        logger.info("ActionLog.ValidateToken.Stop.Success");
+        logger.info("ActionLog.validateToken.stop.success : token{}", token);
 
         return tokenUtil.getUserInfoFromToken(token);
     }

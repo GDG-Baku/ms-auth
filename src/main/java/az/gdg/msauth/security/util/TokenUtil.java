@@ -37,7 +37,6 @@ public class TokenUtil {
         logger.info("UtilLog.getUserInfoFromToken.Stop.success : token{}", token);
         return UserInfo
                 .builder()
-                .token(token)
                 .role(role)
                 .status(status)
                 .userId(userId)
@@ -131,7 +130,7 @@ public class TokenUtil {
     private boolean isTokenExpired(String token) {
         logger.info("UtilLog.isTokenExpired.start : token{}", token);
         Date expirationDate = getExpirationDateFromToken(token);
-        logger.info("UtilLog.isTokenExpired.stop.success : token{]", token);
+        logger.info("UtilLog.isTokenExpired.stop.success : token{}", token);
         return expirationDate.before(clock.now());
     }
 
