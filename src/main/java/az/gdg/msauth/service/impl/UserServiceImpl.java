@@ -65,9 +65,9 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
 
         MailDTO mail = new MailDTO().builder()
-                .mailTo(Collections.singletonList(userDTO.getEmail()))
-                .mailSubject("Your registration letter")
-                .mailBody("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+                .to(Collections.singletonList(userDTO.getEmail()))
+                .subject("Your registration letter")
+                .body("<h2>" + "Verify Account" + "</h2>" + "</br>" +
                         "<a href=" +
                         "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
                         "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>")
@@ -124,9 +124,9 @@ public class UserServiceImpl implements UserService {
 
             String token = tokenUtil.generateTokenWithEmail(email);
             MailDTO mail = new MailDTO().builder()
-                    .mailTo(Collections.singletonList(email))
-                    .mailSubject("Your reset password letter")
-                    .mailBody("<h2>" + "Reset Password" + "</h2>" + "</br>" +
+                    .to(Collections.singletonList(email))
+                    .subject("Your reset password letter")
+                    .body("<h2>" + "Reset Password" + "</h2>" + "</br>" +
                             "<a href=" +
                             "http://localhost:5500/reset.html?token=" + token + ">" +
                             "http://localhost:5500/reset.html?token=" + token + "</a>")
