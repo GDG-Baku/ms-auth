@@ -44,7 +44,7 @@ public class TokenUtil {
                 .build();
     }
 
-    public String getEmailFromResetPasswordToken(String token) {
+    public String getEmailFromToken(String token) {
         logger.info("UtilLog.getEmailFromResetPasswordToken.start : token{}", token);
         String email = getAllClaimsFromToken(token).get("email").toString();
         logger.info("UtilLog.getEmailFromResetPasswordToken.start.success : token{}", token);
@@ -92,15 +92,15 @@ public class TokenUtil {
                 .compact();
     }
 
-    public String generateTokenForResetPasswordURL(String email) {
+    public String generateTokenWithEmail(String email) {
         logger.info("UtilLog.generateTokenForResetPasswordURL.start : email{}", email);
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
         logger.info("UtilLog.generateTokenForResetPasswordURL.stop.success : email{}", email);
-        return doGenerateTokenForResetPasswordURL(claims);
+        return doGenerateTokenWithEmailL(claims);
     }
 
-    public String doGenerateTokenForResetPasswordURL(Map<String, Object> claims) {
+    public String doGenerateTokenWithEmailL(Map<String, Object> claims) {
         logger.info("UtilLog.doGenerateTokenForResetPasswordURL.start");
         Date createdDate = clock.now();
         Date expirationDate = calculateExpirationDate(createdDate);

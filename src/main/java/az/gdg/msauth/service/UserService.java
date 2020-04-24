@@ -9,7 +9,7 @@ public interface UserService {
 
     String getCustomerIdByEmail(String token, String email);
 
-    void verifyAccount(String email, String code);
+    void verifyAccount(String token);
 
     void sendResetPasswordLinkToMail(String email);
 

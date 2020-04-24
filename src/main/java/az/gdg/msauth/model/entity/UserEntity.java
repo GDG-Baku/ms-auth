@@ -19,7 +19,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -49,9 +49,6 @@ public class UserEntity {
     @Column(name = "surname")
     private String surname;
 
-    @Column(name = "account_verification_code")
-    private String accountVerificationCode;
-
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -63,12 +60,12 @@ public class UserEntity {
     @Column(name = "created_at")
     @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
 }
 

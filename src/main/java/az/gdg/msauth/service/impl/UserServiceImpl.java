@@ -21,7 +21,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.UUID;
 
 
 @Service
@@ -50,8 +49,8 @@ public class UserServiceImpl implements UserService {
             throw new WrongDataException("This email already exists");
         }
 
+        String token = tokenUtil.generateTokenWithEmail(userDTO.getEmail());
         String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
-        String code = UUID.randomUUID().toString();
         UserEntity userEntity = UserEntity
                 .builder()
                 .name(userDTO.getName())
@@ -59,7 +58,6 @@ public class UserServiceImpl implements UserService {
                 .username(userDTO.getEmail())
                 .email(userDTO.getEmail())
                 .password(password)
-                .accountVerificationCode(code)
                 .role(Role.ROLE_USER)
                 .status(Status.REGISTERED)
                 .build();
@@ -72,9 +70,9 @@ public class UserServiceImpl implements UserService {
                 .mailBody("<h2>" + "Verify Account" + "</h2>" + "</br>" +
                         "<a href=" +
                         "https://gdg-ms-auth.herokuapp.com/user/verify-account?email=" + userDTO.getEmail() +
-                        "&code=" + code + ">" +
+                        "&code=" + token + ">" +
                         "https://gdg-ms-auth.herokuapp.com/user/verify-account?email=" + userDTO.getEmail() +
-                        "&code=" + code + "</a>")
+                        "&code=" + token + "</a>")
                 .build();
 
         emailService.sendToQueue(mail);
@@ -102,25 +100,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verifyAccount(String email, String code) {
-        logger.info("ActionLog.verifyAccount.start : email {}", email);
+    public void verifyAccount(String token) {
+        logger.info("ActionLog.verifyAccount.start : token {}", token);
+        String email = tokenUtil.getEmailFromToken(token);
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
-            if (user.getAccountVerificationCode().equals(code)) {
-                user.setStatus(Status.CONFIRMED);
-                user.setAccountVerificationCode(UUID.randomUUID().toString());
-                userRepository.save(user);
-            } else {
-                logger.error("ActionLog.WrongDataException.thrown");
-                throw new WrongDataException("Verification code is not valid!");
-            }
+            user.setStatus(Status.CONFIRMED);
+            userRepository.save(user);
         } else {
             logger.error("ActionLog.WrongDataException.thrown");
             throw new WrongDataException("No found such user");
         }
 
-        logger.info("ActionLog.verifyAccount.stop.success : email{}", email);
+        logger.info("ActionLog.verifyAccount.stop.success : token{}", token);
 
     }
 
@@ -131,7 +124,7 @@ public class UserServiceImpl implements UserService {
 
         if (user != null) {
 
-            String token = tokenUtil.generateTokenForResetPasswordURL(email);
+            String token = tokenUtil.generateTokenWithEmail(email);
             MailDTO mail = new MailDTO().builder()
                     .mailTo(Collections.singletonList(email))
                     .mailSubject("Your reset password letter")
@@ -154,7 +147,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resetPassword(String token, String password) {
         logger.info("ActionLog.resetPassword.start : token{}", token);
-        String email = tokenUtil.getEmailFromResetPasswordToken(token);
+        String email = tokenUtil.getEmailFromToken(token);
 
         UserEntity user = userRepository.findByEmail(email);
 

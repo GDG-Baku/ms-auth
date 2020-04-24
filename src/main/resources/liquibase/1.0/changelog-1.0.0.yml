@@ -30,11 +30,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: account_verification_code
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
                   name: role
                   type: varchar(255)
                   constraints:
