@@ -1,6 +1,5 @@
 package az.gdg.msauth.controller;
 
-import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.model.dto.UserInfoForBlogService;
@@ -43,55 +42,57 @@ public class UserController {
     @PostMapping(value = "/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     public void signUp(@RequestBody @Valid UserDTO userDTO) {
-        logger.debug("Sign up user start");
+        logger.debug("Sign up user start : email{}", userDTO.getEmail());
         userService.signUp(userDTO);
-        logger.debug("Sign up user end");
+        logger.debug("Sign up user end : email{}", userDTO.getEmail());
     }
 
     @ApiOperation("get user info")
     @GetMapping("/info")
-    public UserInfo getCustomerInfo(@RequestHeader("X-Auth-Token") String token) {
-        logger.debug("Token validation start");
+    public UserInfo getUserInfo(@RequestHeader("X-Auth-Token") String token) {
+        logger.debug("Token validation start : token{}", token);
         return authenticationService.validateToken(token);
     }
 
     @ApiOperation("get userId by email")
     @GetMapping("/id/by/email/{email}")
-    public String getCustomerIdByEmail(
+    public String getUserIdByEmail(
             @RequestHeader("X-Auth-Token") String token,
             @PathVariable(name = "email") String email) {
-        logger.debug("Get Customer's id by email");
+        logger.debug("Get customer's id by email : email{}", email);
         return userService.getCustomerIdByEmail(token, email);
     }
 
     @ApiOperation("get user by id for blog service")
     @GetMapping("/{userId}")
     public UserInfoForBlogService getUserById(@PathVariable("userId") int userId) {
+        logger.debug("User info for blog service : userId{}", userId);
         return userService.getUserById(userId);
     }
 
     @ApiOperation("verify account when user registers")
     @GetMapping(value = "/verify-account")
     public String verifyAccount(@RequestParam("email") String email, @RequestParam("code") String code) {
-        logger.debug("VerifyAccount start");
+        logger.debug("Verify account start : email{}", email);
         userService.verifyAccount(email, code);
-        logger.debug("VerifyAccount end");
+        logger.debug("Verify account stop : email{}", email);
         return "Your account is verified, now you can log in";
     }
 
     @ApiOperation("send reset password link to mail")
     @GetMapping(value = "/forgot-password")
     public void sendResetPasswordLinkToMail(@RequestParam("email") String email) {
-        logger.debug("SendResetPasswordLinkToMail start");
+        logger.debug("Send reset password link to mail start : email{}", email);
         userService.sendResetPasswordLinkToMail(email);
-        logger.debug("SendResetPasswordLinkToMail stop");
+        logger.debug("Send reset password link to mail stop : email{}", email);
     }
 
     @ApiOperation("reset password")
     @PostMapping(value = "/reset-password")
-    public void resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
+    public void resetPassword(@RequestHeader("X-Auth-Token") String token,
+                              @RequestBody String password) {
         logger.debug("ResetPassword start");
-        userService.resetPassword(resetPasswordDTO);
+        userService.resetPassword(token, password);
         logger.debug("ResetPassword stop");
     }
 

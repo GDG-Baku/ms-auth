@@ -1,6 +1,5 @@
 package az.gdg.msauth.service;
 
-import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.model.dto.UserInfoForBlogService;
 
@@ -14,7 +13,7 @@ public interface UserService {
 
     public void sendResetPasswordLinkToMail(String email);
 
-    public void resetPassword(ResetPasswordDTO resetPasswordDTO);
+    public void resetPassword(String token, String password);
 
     public UserInfoForBlogService getUserById(int id);
 

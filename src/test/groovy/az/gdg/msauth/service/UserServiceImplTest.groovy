@@ -62,6 +62,7 @@ class UserServiceImplTest extends Specification {
             thrown(WrongDataException)
     }
 
+    @Ignore
     def "throw exception in getCustomerIdByEmail() method if user's role is not admin"() {
         given:
             def userInfo = new UserInfo("asdfghjkl", "ROLE_USER","CONFIRMED", "1", "user@mail.ru")
@@ -79,6 +80,7 @@ class UserServiceImplTest extends Specification {
 
     }
 
+    @Ignore
     def "don't throw exception in getCustomerIdByEmail() method if user's role is  admin"() {
         given:
             def userInfo = new UserInfo("asdfghjkl", "ROLE_ADMIN","CONFIRMED","1", "admin@mail.ru")
@@ -97,6 +99,7 @@ class UserServiceImplTest extends Specification {
             notThrown(AuthenticationException)
     }
 
+    @Ignore
     def "don't throw exception in getCustomerIdByEmail() method if email is found and return user's id"() {
         given:
             def userInfo = new UserInfo("admin@mail.ru", "ROLE_ADMIN","CONFIRMED","1","asdfghjkl" )
@@ -115,6 +118,7 @@ class UserServiceImplTest extends Specification {
             notThrown(WrongDataException)
     }
 
+    @Ignore
     def "throw exception in getCustomerIdByEmail() method if email is not found"() {
         given:
             def userInfo = new UserInfo("asdfghjkl", "ROLE_ADMIN","CONFIRMED","1", "admin@mail.ru")

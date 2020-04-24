@@ -3,7 +3,6 @@ package az.gdg.msauth.service.impl;
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.mapper.UserMapper;
 import az.gdg.msauth.model.dto.MailDTO;
-import az.gdg.msauth.model.dto.ResetPasswordDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.exception.WrongDataException;
@@ -43,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void signUp(UserDTO userDTO) {
-        logger.info("ActionLog.Sign up user.Start");
+        logger.info("ActionLog.sign up user.Start : email{}", userDTO.getEmail());
 
         UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
         if (checkedEmail != null) {
@@ -79,22 +78,21 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         emailService.sendToQueue(mail);
-        logger.info("ActionLog.Sign up user.Stop.Success");
+        logger.info("ActionLog.Sign up user.Stop.Success : email{}", userDTO.getEmail());
 
     }
 
     public String getCustomerIdByEmail(String token, String email) {
-        logger.info("ActionLog.GetCustomerIdByEmail.Start");
+        logger.info("ActionLog.GetCustomerIdByEmail.Start : email{}", email);
         UserInfo userInfo = authenticationService.validateToken(token);
-        String userRole = userInfo.getRole();
-        if (!userRole.equals("ROLE_ADMIN")) {
+        if (!userInfo.getRole().equals("ROLE_ADMIN")) {
             logger.error("ActionLog.AuthenticationException.Thrown");
             throw new AuthenticationException("You do not have rights for access");
         }
 
         UserEntity foundUser = userRepository.findByEmail(email);
         if (foundUser != null) {
-            logger.info("ActionLog.GetCustomerIdByEmail.Stop.Success");
+            logger.info("ActionLog.GetCustomerIdByEmail.Stop.Success : email{}", email);
             return foundUser.getId().toString();
         } else {
             logger.error("ActionLog.WrongDataException.Thrown");
@@ -122,7 +120,7 @@ public class UserServiceImpl implements UserService {
             throw new WrongDataException("No found such user");
         }
 
-        logger.info("ActionLog.VerifyAccount.Stop.Success");
+        logger.info("ActionLog.VerifyAccount.Stop.Success : email{}", email);
 
     }
 
@@ -149,19 +147,19 @@ public class UserServiceImpl implements UserService {
             throw new WrongDataException("No such user found!");
         }
 
-        logger.info("ActionLog.SendResetPasswordLinkToMail.Stop.Success");
+        logger.info("ActionLog.SendResetPasswordLinkToMail.Stop.Success : email{}", email);
 
     }
 
     @Override
-    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
-        logger.info("ActionLog.ResetPassword.Start");
-        String email = tokenUtil.getEmailFromResetPasswordToken(resetPasswordDTO.getToken());
+    public void resetPassword(String token, String password) {
+        logger.info("ActionLog.ResetPassword.Start : token{}", token);
+        String email = tokenUtil.getEmailFromResetPasswordToken(token);
 
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
-            String newPassword = new BCryptPasswordEncoder().encode(resetPasswordDTO.getPassword());
+            String newPassword = new BCryptPasswordEncoder().encode(password);
             user.setPassword(newPassword);
             userRepository.save(user);
         } else {
@@ -169,7 +167,7 @@ public class UserServiceImpl implements UserService {
             throw new WrongDataException("No found such user!");
         }
 
-        logger.info("ActionLog.ResetPassword.Stop.Success");
+        logger.info("ActionLog.ResetPassword.Stop.Success : token{}", token);
 
     }
 
