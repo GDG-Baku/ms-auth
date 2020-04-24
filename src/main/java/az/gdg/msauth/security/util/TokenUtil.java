@@ -20,9 +20,8 @@ import java.util.function.Function;
 @Component
 public class TokenUtil {
 
-    private Clock clock = DefaultClock.INSTANCE;
     private static final Logger logger = LoggerFactory.getLogger(TokenUtil.class);
-
+    private final Clock clock = DefaultClock.INSTANCE;
     @Value("${jwt.secret}")
     private String secret;
 

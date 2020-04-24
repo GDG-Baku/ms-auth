@@ -11,7 +11,6 @@ import az.gdg.msauth.security.model.dto.UserInfo
 import az.gdg.msauth.security.service.impl.AuthenticationServiceImpl
 import az.gdg.msauth.security.util.TokenUtil
 import org.springframework.security.authentication.AuthenticationManager
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Title
 
@@ -33,7 +32,7 @@ class AuthenticationServiceImplTest extends Specification {
 
     def "return userinfo in validateToken() method if token is valid"() {
         given:
-            def userInfo = new UserInfo("admin@mail.ru", "ROLE_USER","RECIEVED","1","asdfghjkl" )
+            def userInfo = new UserInfo("admin@mail.ru", "ROLE_USER", "RECIEVED", "1", "asdfghjkl")
             String token = "asdfghjkl"
             1 * tokenUtil.isTokenValid(token) >> true
 
@@ -61,7 +60,7 @@ class AuthenticationServiceImplTest extends Specification {
     def "don't throw WrongDataException in createAuthenticationToken() method if userEntity is found and return token"() {
         given:
             def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
-            def entity = new UserEntity(1, null, null, null, null, null,null, "ROLE_USER" as Role, "CONFIRMED" as Status, null,null)
+            def entity = new UserEntity(1, null, null, null, null, null, null, "ROLE_USER" as Role, "CONFIRMED" as Status, null, null)
             def token = "asdfghjklyutryrwrtututu"
             1 * userRepository.findByEmail(request.getEmail()) >> entity
 
@@ -78,7 +77,7 @@ class AuthenticationServiceImplTest extends Specification {
     def "don't throw WrongDataException in createAuthenticationToken() method if status is CONFIRMED and return token"() {
         given:
             def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
-            def entity = new UserEntity(1, null, null, null, null, null,null, "ROLE_USER" as Role, "CONFIRMED" as Status, null,null)
+            def entity = new UserEntity(1, null, null, null, null, null, null, "ROLE_USER" as Role, "CONFIRMED" as Status, null, null)
             def token = "asdfghjklyutryrwrtututu"
             2 * userRepository.findByEmail(request.getEmail()) >> entity
             userRepository.findByEmail(request.getEmail()).getStatus().toString().equals("CONFIRMED") >> true
@@ -96,7 +95,7 @@ class AuthenticationServiceImplTest extends Specification {
     def "throw WrongDataException in createAuthenticationToken() method if status is not CONFIRMED"() {
         given:
             def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
-            def entity = new UserEntity(1, null, null, null, null, null,null, "ROLE_USER" as Role, "REGISTERED" as Status, null,null)
+            def entity = new UserEntity(1, null, null, null, null, null, null, "ROLE_USER" as Role, "REGISTERED" as Status, null, null)
             2 * userRepository.findByEmail(request.getEmail()) >> entity
             userRepository.findByEmail(request.getEmail()).getStatus().toString().equals("CONFIRMED") >> false
 

@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "Authentication Controller")
 public class AuthenticationController {
 
-    private final AuthenticationService service;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+    private final AuthenticationService service;
 
     public AuthenticationController(AuthenticationService service) {
         this.service = service;

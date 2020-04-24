@@ -1,8 +1,8 @@
 package az.gdg.msauth.controller;
 
 import az.gdg.msauth.model.dto.UserDTO;
-import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.model.dto.UserInfoForBlogService;
+import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.service.UserService;
 import io.swagger.annotations.Api;
@@ -29,9 +29,9 @@ import javax.validation.Valid;
 @Api("User Controller")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final AuthenticationService authenticationService;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;

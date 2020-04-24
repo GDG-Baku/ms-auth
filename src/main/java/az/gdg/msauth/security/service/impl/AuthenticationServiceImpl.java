@@ -1,12 +1,12 @@
 package az.gdg.msauth.security.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
-import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.exception.WrongDataException;
+import az.gdg.msauth.model.entity.UserEntity;
+import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.model.dto.JwtAuthenticationRequest;
 import az.gdg.msauth.security.model.dto.JwtAuthenticationResponse;
 import az.gdg.msauth.security.model.dto.UserInfo;
-import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
 import org.slf4j.Logger;
@@ -21,10 +21,10 @@ import java.util.Objects;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     private final TokenUtil tokenUtil;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     public AuthenticationServiceImpl(TokenUtil tokenUtil,
                                      UserRepository userRepository, AuthenticationManager authenticationManager) {
@@ -43,7 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String userId = userEntity.getId().toString();
             String role = userEntity.getRole().toString();
             String status = userEntity.getStatus().toString();
-            String token = tokenUtil.generateToken(request.getEmail(),userId,role,status);
+            String token = tokenUtil.generateToken(request.getEmail(), userId, role, status);
 
             logger.info("ActionLog.CreateAuthenticationToken.Stop.Success");
             return new JwtAuthenticationResponse(token);

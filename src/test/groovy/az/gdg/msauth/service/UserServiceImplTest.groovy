@@ -28,7 +28,7 @@ class UserServiceImplTest extends Specification {
         authenticationServiceImpl = Mock()
         emailServiceImpl = Mock()
         tokenUtil = Mock()
-        userService = new UserServiceImpl(userRepository, authenticationServiceImpl,emailServiceImpl,tokenUtil)
+        userService = new UserServiceImpl(userRepository, authenticationServiceImpl, emailServiceImpl, tokenUtil)
     }
 
     def "doesn't throw exception in signUp() method if email doesn't exist in database"() {
@@ -65,7 +65,7 @@ class UserServiceImplTest extends Specification {
     @Ignore
     def "throw exception in getCustomerIdByEmail() method if user's role is not admin"() {
         given:
-            def userInfo = new UserInfo("asdfghjkl", "ROLE_USER","CONFIRMED", "1", "user@mail.ru")
+            def userInfo = new UserInfo("asdfghjkl", "ROLE_USER", "CONFIRMED", "1", "user@mail.ru")
             def token = "asdfghjkl"
             def email = "user@mail.ru"
 
@@ -83,8 +83,8 @@ class UserServiceImplTest extends Specification {
     @Ignore
     def "don't throw exception in getCustomerIdByEmail() method if user's role is  admin"() {
         given:
-            def userInfo = new UserInfo("asdfghjkl", "ROLE_ADMIN","CONFIRMED","1", "admin@mail.ru")
-            def entity = new UserEntity(1, null, null, null, null, null,null, null, null, null,null)
+            def userInfo = new UserInfo("asdfghjkl", "ROLE_ADMIN", "CONFIRMED", "1", "admin@mail.ru")
+            def entity = new UserEntity(1, null, null, null, null, null, null, null, null, null, null)
             def token = "asdfghjkl"
             def email = "admin@mail.ru"
 
@@ -102,8 +102,8 @@ class UserServiceImplTest extends Specification {
     @Ignore
     def "don't throw exception in getCustomerIdByEmail() method if email is found and return user's id"() {
         given:
-            def userInfo = new UserInfo("admin@mail.ru", "ROLE_ADMIN","CONFIRMED","1","asdfghjkl" )
-            def entity = new UserEntity(1, null, null, null,null, null, null, null, null, null,null)
+            def userInfo = new UserInfo("admin@mail.ru", "ROLE_ADMIN", "CONFIRMED", "1", "asdfghjkl")
+            def entity = new UserEntity(1, null, null, null, null, null, null, null, null, null, null)
             def token = "asdfghjkl"
             def email = "admin@mail.ru"
 
@@ -121,7 +121,7 @@ class UserServiceImplTest extends Specification {
     @Ignore
     def "throw exception in getCustomerIdByEmail() method if email is not found"() {
         given:
-            def userInfo = new UserInfo("asdfghjkl", "ROLE_ADMIN","CONFIRMED","1", "admin@mail.ru")
+            def userInfo = new UserInfo("asdfghjkl", "ROLE_ADMIN", "CONFIRMED", "1", "admin@mail.ru")
             def entity = null
             def token = "asdfghjkl"
             def email = "admin@mail.ru"

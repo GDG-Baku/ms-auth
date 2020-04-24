@@ -1,16 +1,16 @@
 package az.gdg.msauth.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
+import az.gdg.msauth.exception.WrongDataException;
 import az.gdg.msauth.mapper.UserMapper;
 import az.gdg.msauth.model.dto.MailDTO;
 import az.gdg.msauth.model.dto.UserDTO;
+import az.gdg.msauth.model.dto.UserInfoForBlogService;
 import az.gdg.msauth.model.entity.UserEntity;
-import az.gdg.msauth.exception.WrongDataException;
-import az.gdg.msauth.security.model.Status;
-import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.model.Role;
-import az.gdg.msauth.model.dto.UserInfoForBlogService;
+import az.gdg.msauth.security.model.Status;
+import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
 import az.gdg.msauth.service.EmailService;
@@ -27,11 +27,11 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
     private final AuthenticationService authenticationService;
     private final EmailService emailService;
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository, AuthenticationService authenticationService,
                            EmailService emailService, TokenUtil tokenUtil) {
