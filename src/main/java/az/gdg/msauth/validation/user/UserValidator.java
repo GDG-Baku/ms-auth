@@ -20,8 +20,8 @@ public class UserValidator implements
 
     @Override
     public boolean isValid(UserDTO value, ConstraintValidatorContext context) {
-        return isNameValid(value.getName(), context) &&
-                isSurnameValid(value.getSurname(), context) &&
+        return isNameValid(value.getFirstName(), context) &&
+                isSurnameValid(value.getLastName(), context) &&
                 isEmailValid(value.getEmail(), context) &&
                 isPasswordValid(value.getPassword(), context);
     }

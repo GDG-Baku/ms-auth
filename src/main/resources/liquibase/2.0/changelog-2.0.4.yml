@@ -15,7 +15,7 @@ databaseChangeLog:
                   name:  email
                   value: huseynov_ali@outlook.com
               - column:
-                  name: name
+                  name: first_name
                   value: Ali
               - column:
                   name: password
@@ -27,7 +27,7 @@ databaseChangeLog:
                   name: status
                   value: CONFIRMED
               - column:
-                  name: surname
+                  name: last_name
                   value: Huseynov
               - column:
                   name: username

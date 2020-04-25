@@ -15,7 +15,7 @@ databaseChangeLog:
                   name:  email
                   value: muradisgenderli441@@gmail.com
               - column:
-                  name: name
+                  name: first_name
                   value: Murad
               - column:
                   name: password
@@ -27,7 +27,7 @@ databaseChangeLog:
                   name: status
                   value: CONFIRMED
               - column:
-                  name: surname
+                  name: last_name
                   value: Isgandarli
               - column:
                   name: username

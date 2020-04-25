@@ -16,8 +16,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -34,7 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public JwtAuthenticationResponse createAuthenticationToken(JwtAuthenticationRequest request) {
-        logger.info("ActionLog.createAuthenticationToken.start : email{}", request.getEmail());
+        logger.info("ActionLog.createAuthenticationToken.start : email {}", request.getEmail());
 
         authenticate(request.getEmail(), request.getPassword());
         UserEntity userEntity = userRepository.findByEmail(request.getEmail());
@@ -45,7 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String status = userEntity.getStatus().toString();
             String token = tokenUtil.generateToken(request.getEmail(), userId, role, status);
 
-            logger.info("ActionLog.createAuthenticationToken.stop.success : email{}", request.getEmail());
+            logger.info("ActionLog.createAuthenticationToken.stop.success : email {}", request.getEmail());
             return new JwtAuthenticationResponse(token);
         } else {
             logger.info("ActionLog.createAuthenticationToken.stop.WrongDataException.thrown");
@@ -55,25 +53,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public void authenticate(String username, String password) {
-        logger.info("ActionLog.authenticate.start : username{}", username);
-        Objects.requireNonNull(username);
-        Objects.requireNonNull(password);
+        logger.info("ActionLog.authenticate.start : username {}", username);
 
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (BadCredentialsException e) {
-            logger.error("ActionLog.AuthenticationException.bad credentials.thrown");
+        if (username != null && password != null) {
+            try {
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            } catch (BadCredentialsException e) {
+                logger.error("ActionLog.AuthenticationException.bad credentials.thrown");
 
-            throw new AuthenticationException("Bad credentials", e);
+                throw new AuthenticationException("Bad credentials", e);
+            }
+        } else {
+            throw new WrongDataException("Username or Password is null!");
         }
 
-        logger.info("ActionLog.authenticate.stop.success : username{}", username);
+        logger.info("ActionLog.authenticate.stop.success : username {}", username);
     }
 
     public UserInfo validateToken(String token) {
-        logger.info("ActionLog.validateToken.start : token{}", token);
+        logger.info("ActionLog.validateToken.start : token {}", token);
         tokenUtil.isTokenValid(token);
-        logger.info("ActionLog.validateToken.stop.success : token{}", token);
+        logger.info("ActionLog.validateToken.stop.success : token {}", token);
 
         return tokenUtil.getUserInfoFromToken(token);
     }

@@ -34,7 +34,7 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/sign-in")
     public JwtAuthenticationResponse signIn(@RequestBody JwtAuthenticationRequest request) {
-        logger.debug("Sign in start : email{}", request.getEmail());
+        logger.debug("Sign in start : email {}", request.getEmail());
         return service.createAuthenticationToken(request);
     }
 
@@ -42,7 +42,7 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/validate")
     public UserInfo validateToken(@RequestHeader("X-Auth-Token") String token) {
-        logger.debug("Validate token start : token{}", token);
+        logger.debug("Validate token start : token {}", token);
         return service.validateToken(token);
     }
 

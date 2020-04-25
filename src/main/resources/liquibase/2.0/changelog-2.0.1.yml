@@ -15,7 +15,7 @@ databaseChangeLog:
                   name:  email
                   value: movsum.nigar@gmail.com
               - column:
-                  name: name
+                  name: first_name
                   value: Nigar
               - column:
                   name: password
@@ -27,7 +27,7 @@ databaseChangeLog:
                   name: status
                   value: CONFIRMED
               - column:
-                  name: surname
+                  name: last_name
                   value: Movsumova
               - column:
                   name: username

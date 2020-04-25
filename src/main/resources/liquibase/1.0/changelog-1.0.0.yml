@@ -20,7 +20,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: name
+                  name: first_name
                   type: varchar(255)
                   constraints:
                     nullable: false
@@ -40,7 +40,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: surname
+                  name: last_name
                   type: varchar(255)
                   constraints:
                     nullable: false

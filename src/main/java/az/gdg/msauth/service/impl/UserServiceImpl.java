@@ -3,7 +3,6 @@ package az.gdg.msauth.service.impl;
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.exception.WrongDataException;
 import az.gdg.msauth.mapper.UserMapper;
-import az.gdg.msauth.model.dto.MailDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.model.dto.UserInfoForBlogService;
 import az.gdg.msauth.model.entity.UserEntity;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.Optional;
 
 
 @Service
@@ -41,7 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void signUp(UserDTO userDTO) {
-        logger.info("ActionLog.sign up user.start : email{}", userDTO.getEmail());
+        logger.info("ActionLog.sign up user.start : email {} ", userDTO.getEmail());
 
         UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
         if (checkedEmail != null) {
@@ -53,8 +52,8 @@ public class UserServiceImpl implements UserService {
         String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
         UserEntity userEntity = UserEntity
                 .builder()
-                .name(userDTO.getName())
-                .surname(userDTO.getSurname())
+                .firstName(userDTO.getFirstName())
+                .lastName(userDTO.getLastName())
                 .username(userDTO.getEmail())
                 .email(userDTO.getEmail())
                 .password(password)
@@ -64,22 +63,15 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(userEntity);
 
-        MailDTO mail = new MailDTO().builder()
-                .to(Collections.singletonList(userDTO.getEmail()))
-                .subject("Your registration letter")
-                .body("<h2>" + "Verify Account" + "</h2>" + "</br>" +
-                        "<a href=" +
-                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
-                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>")
-                .build();
+        emailService.sendEmail("https://gdg-ms-auth.herokuapp.com/user/verify-account",
+                userDTO.getEmail(), token, "Your registration letter", "Verify Account");
 
-        emailService.sendToQueue(mail);
-        logger.info("ActionLog.sign up user.stop.success : email{}", userDTO.getEmail());
+        logger.info("ActionLog.sign up user.stop.success : email {}", userDTO.getEmail());
 
     }
 
     public String getCustomerIdByEmail(String token, String email) {
-        logger.info("ActionLog.getCustomerIdByEmail.start : email{}", email);
+        logger.info("ActionLog.getCustomerIdByEmail.start : email {}", email);
         UserInfo userInfo = authenticationService.validateToken(token);
         if (!userInfo.getRole().equals("ROLE_ADMIN")) {
             logger.error("ActionLog.AuthenticationException.Thrown");
@@ -88,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
         UserEntity foundUser = userRepository.findByEmail(email);
         if (foundUser != null) {
-            logger.info("ActionLog.getCustomerIdByEmail.stop.success : email{}", email);
+            logger.info("ActionLog.getCustomerIdByEmail.stop.success : email {}", email);
             return foundUser.getId().toString();
         } else {
             logger.error("ActionLog.WrongDataException.thrown");
@@ -111,7 +103,7 @@ public class UserServiceImpl implements UserService {
             throw new WrongDataException("No found such user");
         }
 
-        logger.info("ActionLog.verifyAccount.stop.success : token{}", token);
+        logger.info("ActionLog.verifyAccount.stop.success : token {}", token);
 
     }
 
@@ -123,28 +115,22 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
 
             String token = tokenUtil.generateTokenWithEmail(email);
-            MailDTO mail = new MailDTO().builder()
-                    .to(Collections.singletonList(email))
-                    .subject("Your reset password letter")
-                    .body("<h2>" + "Reset Password" + "</h2>" + "</br>" +
-                            "<a href=" +
-                            "http://localhost:5500/reset.html?token=" + token + ">" +
-                            "http://localhost:5500/reset.html?token=" + token + "</a>")
-                    .build();
 
-            emailService.sendToQueue(mail);
+            emailService.sendEmail("http://localhost:5500/reset.html",
+                    email, token, "Your reset password letter", "Reset Password");
+
         } else {
             logger.error("ActionLog.WrongDataException.thrown");
             throw new WrongDataException("No such user found!");
         }
 
-        logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success : email{}", email);
+        logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success : email {}", email);
 
     }
 
     @Override
     public void resetPassword(String token, String password) {
-        logger.info("ActionLog.resetPassword.start : token{}", token);
+        logger.info("ActionLog.resetPassword.start : token {}", token);
         String email = tokenUtil.getEmailFromToken(token);
 
         UserEntity user = userRepository.findByEmail(email);
@@ -158,19 +144,22 @@ public class UserServiceImpl implements UserService {
             throw new WrongDataException("No found such user!");
         }
 
-        logger.info("ActionLog.resetPassword.stop.success : token{}", token);
+        logger.info("ActionLog.resetPassword.stop.success : token {}", token);
 
     }
 
     @Override
     public UserInfoForBlogService getUserById(int id) {
-        UserEntity user = userRepository.findById(id).get();
+        logger.info("ActionLog.getUserById.start : id {}", id);
+        Optional<UserEntity> user = userRepository.findById(id);
 
-        if (user != null) {
-            return UserMapper.INSTANCE.entityToDto(user);
+        if (user.isPresent()) {
+            return UserMapper.INSTANCE.entityToDto(user.get());
 
         } else {
+
             throw new WrongDataException("No found such user");
         }
     }
+
 }
