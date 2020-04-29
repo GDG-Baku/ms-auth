@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void signUp(UserDTO userDTO) {
-        logger.info("ActionLog.sign up user.start : email {} ", userDTO.getEmail());
+        logger.info("ActionLog.signUp user.start : email {} ", userDTO.getEmail());
 
         UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
         if (checkedEmail != null) {
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         emailService.sendEmail("https://gdg-ms-auth.herokuapp.com/user/verify-account",
                 userDTO.getEmail(), token, "Your registration letter", "Verify Account");
 
-        logger.info("ActionLog.sign up user.stop.success : email {}", userDTO.getEmail());
+        logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getEmail());
 
     }
 
@@ -136,9 +136,17 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findByEmail(email);
 
         if (user != null) {
-            String newPassword = new BCryptPasswordEncoder().encode(password);
-            user.setPassword(newPassword);
-            userRepository.save(user);
+            boolean check = new BCryptPasswordEncoder().matches(password, user.getPassword());
+
+            if (!check) {
+                String newPassword = new BCryptPasswordEncoder().encode(password);
+                user.setPassword(newPassword);
+                userRepository.save(user);
+            } else {
+                throw new WrongDataException("Please, enter the password different from last one");
+            }
+
+
         } else {
             logger.info("ActionLog.WrongDataException.thrown");
             throw new WrongDataException("No found such user!");

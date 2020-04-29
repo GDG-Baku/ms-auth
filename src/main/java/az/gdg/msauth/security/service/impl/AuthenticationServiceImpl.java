@@ -37,19 +37,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticate(request.getEmail(), request.getPassword());
         UserEntity userEntity = userRepository.findByEmail(request.getEmail());
 
-        if (userEntity != null && userEntity.getStatus().toString().equals("CONFIRMED")) {
-            String userId = userEntity.getId().toString();
-            String role = userEntity.getRole().toString();
-            String status = userEntity.getStatus().toString();
-            String token = tokenUtil.generateToken(request.getEmail(), userId, role, status);
+        if (userEntity != null) {
 
-            logger.info("ActionLog.createAuthenticationToken.stop.success : email {}", request.getEmail());
-            return new JwtAuthenticationResponse(token);
+            switch (userEntity.getStatus().toString()) {
+                case "CONFIRMED":
+                    String userId = userEntity.getId().toString();
+                    String role = userEntity.getRole().toString();
+                    String status = userEntity.getStatus().toString();
+                    String token = tokenUtil.generateToken(request.getEmail(), userId, role, status);
+
+                    logger.info("ActionLog.createAuthenticationToken.stop.success : email {}", request.getEmail());
+                    return new JwtAuthenticationResponse(token);
+                case "REGISTERED":
+                    throw new AuthenticationException("Your registration is not verified," +
+                            " please check your email for verification link which has been sent");
+                case "BLOCKED":
+                    throw new AuthenticationException("Your account has been blocked by admins, please contact us");
+                default:
+
+            }
+
+
         } else {
             logger.info("ActionLog.createAuthenticationToken.stop.WrongDataException.thrown");
-            throw new WrongDataException("Email is not registered or you are not confirmed by admins");
+            throw new WrongDataException("Email is not registered");
         }
 
+        return null;
     }
 
     public void authenticate(String username, String password) {

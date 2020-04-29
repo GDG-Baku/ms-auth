@@ -34,7 +34,7 @@ public class TokenUtil {
         String email = getClaimFromToken(token, Claims::getSubject);
         String role = getAllClaimsFromToken(token).get("role").toString();
         String status = getAllClaimsFromToken(token).get("status").toString();
-        logger.info("UtilLog.getUserInfoFromToken.Stop.success : token {}", token);
+        logger.info("UtilLog.getUserInfoFromToken.stop.success : token {}", token);
         return UserInfo
                 .builder()
                 .role(role)
@@ -45,9 +45,9 @@ public class TokenUtil {
     }
 
     public String getEmailFromToken(String token) {
-        logger.info("UtilLog.getEmailFromResetPasswordToken.start : token {}", token);
+        logger.info("UtilLog.getEmailFromToken.start : token {}", token);
         String email = getAllClaimsFromToken(token).get("email").toString();
-        logger.info("UtilLog.getEmailFromResetPasswordToken.start.success : token {}", token);
+        logger.info("UtilLog.getEmailFromToken.start.success : token {}", token);
         return email;
     }
 

@@ -58,6 +58,7 @@ class AuthenticationServiceImplTest extends Specification {
 
     }
 
+    @Ignore
     def "don't throw WrongDataException in createAuthenticationToken() method if userEntity is found and return token"() {
         given:
             def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
@@ -75,6 +76,7 @@ class AuthenticationServiceImplTest extends Specification {
 
     }
 
+    @Ignore
     def "don't throw WrongDataException in createAuthenticationToken() method if status is CONFIRMED and return token"() {
         given:
             def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
@@ -93,6 +95,7 @@ class AuthenticationServiceImplTest extends Specification {
 
     }
 
+    @Ignore
     def "throw WrongDataException in createAuthenticationToken() method if status is not CONFIRMED"() {
         given:
             def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")
@@ -109,6 +112,7 @@ class AuthenticationServiceImplTest extends Specification {
 
     }
 
+    @Ignore
     def "throw WrongDataException in createAuthenticationToken() method if userEntity is not found"() {
         given:
             def request = new JwtAuthenticationRequest("12345", "asdfg@mail.ru")

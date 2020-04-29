@@ -18,9 +18,8 @@ public class HealthController {
 
 
     @ApiOperation(value = "Method will be called by ms-alarm")
-
     @GetMapping
     public void health() {
-        logger.info("ActionLog.ms-article.start");
+        logger.info("ActionLog.ms-auth.start");
     }
 }
