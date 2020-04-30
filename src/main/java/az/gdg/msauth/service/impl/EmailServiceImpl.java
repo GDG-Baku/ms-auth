@@ -26,15 +26,12 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmail(String url, String email, String token, String subject, String option) {
+    public void sendEmail(String url, String email, String subject) {
         logger.info("Action.sendEmail.start : email {}", email);
         MailDTO mail = new MailDTO().builder()
                 .to(Collections.singletonList(email))
                 .subject(subject)
-                .body("<h2>" + option + "</h2>" + "</br>" +
-                        "<a href=" +
-                        url + "?token=" + token + ">" +
-                        url + "?token=" + token + "</a>")
+                .body(url)
                 .build();
 
         sendToQueue(mail);

@@ -63,8 +63,11 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(userEntity);
 
-        emailService.sendEmail("https://gdg-ms-auth.herokuapp.com/user/verify-account",
-                userDTO.getEmail(), token, "Your registration letter", "Verify Account");
+        emailService.sendEmail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+                        "<a href=" +
+                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
+                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>",
+                userDTO.getEmail(), "Your verification letter");
 
         logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getEmail());
 
@@ -116,8 +119,11 @@ public class UserServiceImpl implements UserService {
 
             String token = tokenUtil.generateTokenWithEmail(email);
 
-            emailService.sendEmail("http://virustat.org/reset.html",
-                    email, token, "Your reset password letter", "Reset Password");
+            emailService.sendEmail("<h2>" + "Reset Password" + "</h2>" + "</br>" +
+                            "<a href=" +
+                            "http://virustat.org/reset.html?token=" + token + ">" +
+                            "http://virustat.org/reset.html?token=" + token + "</a>",
+                    email, "Your reset password letter");
 
         } else {
             logger.error("ActionLog.WrongDataException.thrown");
@@ -151,6 +157,9 @@ public class UserServiceImpl implements UserService {
             logger.info("ActionLog.WrongDataException.thrown");
             throw new WrongDataException("No found such user!");
         }
+
+        emailService.sendEmail("<h2>" + "Your password has been changed successfully" + "</h2>",
+                email, "Successfully Changed");
 
         logger.info("ActionLog.resetPassword.stop.success : token {}", token);
 

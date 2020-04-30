@@ -13,7 +13,7 @@ databaseChangeLog:
                   value: now()
               - column:
                   name:  email
-                  value: muradisgenderli441@@gmail.com
+                  value: muradisgenderli441@gmail.com
               - column:
                   name: first_name
                   value: Murad
@@ -31,6 +31,6 @@ databaseChangeLog:
                   value: Isgandarli
               - column:
                   name: username
-                  value: muradisgenderli441@@gmail.com
+                  value: muradisgenderli441@gmail.com
             tableName: users
             remarks: insert mock user in users
