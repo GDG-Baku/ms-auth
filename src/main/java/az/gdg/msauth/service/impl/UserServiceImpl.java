@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
             String token = tokenUtil.generateTokenWithEmail(email);
 
-            emailService.sendEmail("http://localhost:5500/reset.html",
+            emailService.sendEmail("http://virustat.org/reset.html",
                     email, token, "Your reset password letter", "Reset Password");
 
         } else {
