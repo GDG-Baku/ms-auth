@@ -27,6 +27,9 @@ databaseChangeLog:
                   name: status
                   value: CONFIRMED
               - column:
+                  name: popularity
+                  value: 0
+              - column:
                   name: last_name
                   value: Yagubova
               - column:

@@ -45,6 +45,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: popularity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
                   name: username
                   type: varchar(255)
                   constraints:

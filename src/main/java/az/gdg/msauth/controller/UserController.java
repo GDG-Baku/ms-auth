@@ -1,7 +1,7 @@
 package az.gdg.msauth.controller;
 
 import az.gdg.msauth.model.dto.UserDTO;
-import az.gdg.msauth.model.dto.UserInfoForBlogService;
+import az.gdg.msauth.model.dto.UserDetail;
 import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.service.UserService;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -60,12 +61,12 @@ public class UserController {
             @RequestHeader("X-Auth-Token") String token,
             @PathVariable(name = "email") String email) {
         logger.debug("getUserIdByEmail by email start : email {}", email);
-        return userService.getCustomerIdByEmail(token, email);
+        return userService.getUserIdByEmail(token, email);
     }
 
     @ApiOperation("get user by id for blog service")
     @GetMapping("/{userId}")
-    public UserInfoForBlogService getUserById(@PathVariable("userId") int userId) {
+    public UserDetail getUserById(@PathVariable("userId") int userId) {
         logger.debug("getUserById start : userId {}", userId);
         return userService.getUserById(userId);
     }
@@ -94,6 +95,20 @@ public class UserController {
         logger.debug("resetPassword start : token {}", token);
         userService.resetPassword(token, password);
         logger.debug("resetPassword stop : token {}", token);
+    }
+
+    @GetMapping("/popularity/{userId}")
+    @ApiOperation("add popularity to user for his article which is read")
+    public void addPopularity(@PathVariable("userId") Integer id) {
+        logger.debug("addPopularity start : id {}", id);
+        userService.addPopularity(id);
+    }
+
+    @GetMapping("/popular-users")
+    @ApiOperation("get most popular users")
+    public List<UserDetail> getPopularUsers() {
+        logger.debug("getThreePopularUsers start");
+        return userService.getPopularUsers();
     }
 
 }

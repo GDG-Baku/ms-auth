@@ -4,7 +4,7 @@ import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.exception.WrongDataException;
 import az.gdg.msauth.mapper.UserMapper;
 import az.gdg.msauth.model.dto.UserDTO;
-import az.gdg.msauth.model.dto.UserInfoForBlogService;
+import az.gdg.msauth.model.dto.UserDetail;
 import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.model.Role;
@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -57,6 +58,7 @@ public class UserServiceImpl implements UserService {
                 .username(userDTO.getEmail())
                 .email(userDTO.getEmail())
                 .password(password)
+                .popularity(0)
                 .role(Role.ROLE_USER)
                 .status(Status.REGISTERED)
                 .build();
@@ -73,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public String getCustomerIdByEmail(String token, String email) {
+    public String getUserIdByEmail(String token, String email) {
         logger.info("ActionLog.getCustomerIdByEmail.start : email {}", email);
         UserInfo userInfo = authenticationService.validateToken(token);
         if (!userInfo.getRole().equals("ROLE_ADMIN")) {
@@ -166,7 +168,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoForBlogService getUserById(int id) {
+    public UserDetail getUserById(int id) {
         logger.info("ActionLog.getUserById.start : id {}", id);
         Optional<UserEntity> user = userRepository.findById(id);
 
@@ -178,5 +180,33 @@ public class UserServiceImpl implements UserService {
             throw new WrongDataException("No found such user");
         }
     }
+
+    @Override
+    public void addPopularity(Integer userId) {
+        logger.info("ActionLog.addPopularity.start : userId {}", userId);
+        Optional<UserEntity> user = userRepository.findById(userId);
+
+        if (user.isPresent()) {
+            UserEntity userEntity = user.get();
+            userEntity.setPopularity(userEntity.getPopularity() + 1);
+            userRepository.save(userEntity);
+        } else {
+            logger.error("Thrown.WrongDataException");
+            throw new WrongDataException("No found such user");
+        }
+
+        logger.info("ActionLog.addPopularity.stop.success : userId {}", userId);
+    }
+
+    @Override
+    public List<UserDetail> getPopularUsers() {
+        logger.info("ActionLog.getPopularUsers.start");
+        List<UserEntity> users = userRepository.findFirst3ByOrderByPopularityDesc();
+
+        List<UserDetail> populars = UserMapper.INSTANCE.entityToDtoList(users);
+        logger.info("ActionLog.getPopularUsers.stop.success");
+        return populars;
+    }
+
 
 }
