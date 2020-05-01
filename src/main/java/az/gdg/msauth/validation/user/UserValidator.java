@@ -55,7 +55,8 @@ public class UserValidator implements
     private boolean isPasswordValid(String password, ConstraintValidatorContext context) {
         if (password == null ||
                 password.isEmpty() ||
-                !password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[.@#$%^&+=])(?=\\S+$).{8,}$")) {
+                !password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[./_`~|{}?:;!(),><*@#$%^&+='])" +
+                        "(?=\\S+$).{8,}$")) {
             violationHelper.addViolation(context, "password", "Password is not valid");
             return false;
         }
