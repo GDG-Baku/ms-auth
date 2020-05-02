@@ -16,6 +16,7 @@ import az.gdg.msauth.service.EmailService;
 import az.gdg.msauth.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -199,6 +200,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "populars")
     public List<UserDetail> getPopularUsers() {
         logger.info("ActionLog.getPopularUsers.start");
         List<UserEntity> users = userRepository.findFirst3ByOrderByPopularityDesc();
