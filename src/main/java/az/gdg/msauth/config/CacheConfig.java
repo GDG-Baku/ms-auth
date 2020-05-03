@@ -22,7 +22,7 @@ public class CacheConfig {
         this.cacheManager = cacheManager;
     }
 
-    @Scheduled(cron = "0 0 12 * * ?")  // at 12 PM every day
+    @Scheduled(cron = "0 10 9 * * ?")  // at 12 PM (00:00) every day for Heroku Server Time
     public void clearCacheSchedule() {
         logger.info("Config.clearCacheSchedule.start : date {}", LocalDateTime.now());
         for (String name : cacheManager.getCacheNames()) {
