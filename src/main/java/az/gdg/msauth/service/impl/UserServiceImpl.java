@@ -20,6 +20,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -180,6 +181,25 @@ public class UserServiceImpl implements UserService {
 
             throw new WrongDataException("No found such user");
         }
+    }
+
+    @Override
+    public List<UserDetail> getUsersById(List<Integer> userIds) {
+        logger.info("ActionLog.getUsersById.start : userIds {}", userIds);
+        List<UserDetail> userDetails = new ArrayList<>();
+        for (Integer userId : userIds) {
+            Optional<UserEntity> user = userRepository.findById(userId);
+            if (user.isPresent()) {
+                userDetails.add(UserMapper.INSTANCE.entityToDto(user.get()));
+            } else {
+                continue;
+            }
+
+        }
+
+        logger.info("ActionLog.getUsersById.stop.success : userDetails {}", userDetails);
+
+        return userDetails;
     }
 
     @Override

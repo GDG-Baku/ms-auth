@@ -19,6 +19,8 @@ public interface UserService {
 
     UserDetail getUserById(int id);
 
+    List<UserDetail> getUsersById(List<Integer> userIds);
+
     void addPopularity(Integer userId);
 
     List<UserDetail> getPopularUsers();

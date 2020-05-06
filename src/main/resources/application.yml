@@ -19,7 +19,7 @@ spring:
       bindings:
         output:
           destination: mail
-          group: mail-gorup
+          group: mail-group
   jpa:
     database: mysql
     hibernate:
