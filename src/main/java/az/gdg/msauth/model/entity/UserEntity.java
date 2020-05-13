@@ -49,6 +49,9 @@ public class UserEntity {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "terms_and_conditions")
+    private Boolean termsAndConditions;
+
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;

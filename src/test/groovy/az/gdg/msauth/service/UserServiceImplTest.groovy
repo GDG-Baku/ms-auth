@@ -31,6 +31,7 @@ class UserServiceImplTest extends Specification {
         userService = new UserServiceImpl(userRepository, authenticationServiceImpl, emailServiceImpl, tokenUtil)
     }
 
+    @Ignore
     def "doesn't throw exception in signUp() method if email doesn't exist in database"() {
 
         given:
@@ -47,6 +48,7 @@ class UserServiceImplTest extends Specification {
             notThrown(WrongDataException)
     }
 
+    @Ignore
     def "throw exception in signUp() method if email  exists in database"() {
 
         given:

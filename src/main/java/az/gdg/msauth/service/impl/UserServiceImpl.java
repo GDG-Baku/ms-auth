@@ -45,35 +45,42 @@ public class UserServiceImpl implements UserService {
     public void signUp(UserDTO userDTO) {
         logger.info("ActionLog.signUp user.start : email {} ", userDTO.getEmail());
 
-        UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
-        if (checkedEmail != null) {
-            logger.error("ActionLog.WrongDataException.thrown");
-            throw new WrongDataException("This email already exists");
+        if (userDTO.getTermsAndConditions()) {
+            UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
+            if (checkedEmail != null) {
+                logger.error("ActionLog.WrongDataException.thrown");
+                throw new WrongDataException("This email already exists");
+            }
+
+            String token = tokenUtil.generateTokenWithEmail(userDTO.getEmail());
+            String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
+            UserEntity userEntity = UserEntity
+                    .builder()
+                    .firstName(userDTO.getFirstName())
+                    .lastName(userDTO.getLastName())
+                    .username(userDTO.getEmail())
+                    .email(userDTO.getEmail())
+                    .termsAndConditions(true)
+                    .password(password)
+                    .popularity(0)
+                    .role(Role.ROLE_USER)
+                    .status(Status.REGISTERED)
+                    .build();
+
+            userRepository.save(userEntity);
+
+            emailService.sendEmail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+                            "<a href=" +
+                            "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
+                            "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>",
+                    userDTO.getEmail(), "Your verification letter");
+
+            logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getEmail());
+        } else {
+            logger.error("Thrown.WrongDataException");
+            throw new WrongDataException("Not allowed sign up operation, if you don't agree our terms and conditions");
         }
 
-        String token = tokenUtil.generateTokenWithEmail(userDTO.getEmail());
-        String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
-        UserEntity userEntity = UserEntity
-                .builder()
-                .firstName(userDTO.getFirstName())
-                .lastName(userDTO.getLastName())
-                .username(userDTO.getEmail())
-                .email(userDTO.getEmail())
-                .password(password)
-                .popularity(0)
-                .role(Role.ROLE_USER)
-                .status(Status.REGISTERED)
-                .build();
-
-        userRepository.save(userEntity);
-
-        emailService.sendEmail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
-                        "<a href=" +
-                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
-                        "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>",
-                userDTO.getEmail(), "Your verification letter");
-
-        logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getEmail());
 
     }
 
