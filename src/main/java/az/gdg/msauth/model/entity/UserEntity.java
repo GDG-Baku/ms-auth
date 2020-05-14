@@ -63,6 +63,12 @@ public class UserEntity {
     @Column(name = "popularity")
     private Integer popularity;
 
+    @Column(name = "remaining_quack_count")
+    private Integer remainingQuackCount;
+
+    @Column(name = "remaining_hate_count")
+    private Integer remainingHateCount;
+
     @Column(name = "created_at")
     @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")

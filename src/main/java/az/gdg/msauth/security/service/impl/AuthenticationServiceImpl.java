@@ -59,7 +59,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         } else {
-            logger.info("ActionLog.createAuthenticationToken.stop.WrongDataException.thrown");
             throw new WrongDataException("Mail is not registered");
         }
 
@@ -73,8 +72,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             try {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             } catch (BadCredentialsException e) {
-                logger.error("ActionLog.AuthenticationException.bad credentials.thrown");
-
                 throw new AuthenticationException("Bad credentials", e);
             }
         } else {

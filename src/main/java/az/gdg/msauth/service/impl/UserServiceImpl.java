@@ -6,17 +6,17 @@ import az.gdg.msauth.mapper.UserMapper;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.model.dto.UserDetail;
 import az.gdg.msauth.model.entity.UserEntity;
-import az.gdg.msauth.security.exception.AuthenticationException;
 import az.gdg.msauth.security.model.Role;
 import az.gdg.msauth.security.model.Status;
 import az.gdg.msauth.security.model.dto.UserInfo;
 import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
-import az.gdg.msauth.service.EmailService;
+import az.gdg.msauth.service.MailService;
 import az.gdg.msauth.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +32,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
     private final AuthenticationService authenticationService;
-    private final EmailService emailService;
+    private final MailService mailService;
 
     public UserServiceImpl(UserRepository userRepository, AuthenticationService authenticationService,
-                           EmailService emailService, TokenUtil tokenUtil) {
+                           MailService mailService, TokenUtil tokenUtil) {
         this.userRepository = userRepository;
         this.authenticationService = authenticationService;
-        this.emailService = emailService;
+        this.mailService = mailService;
         this.tokenUtil = tokenUtil;
     }
 
@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
         if (userDTO.getTermsAndConditions()) {
             UserEntity checkedEmail = userRepository.findByMail(userDTO.getMail());
             if (checkedEmail != null) {
-                logger.error("ActionLog.WrongDataException.thrown");
                 throw new WrongDataException("This email already exists");
             }
 
@@ -61,6 +60,8 @@ public class UserServiceImpl implements UserService {
                     .username(userDTO.getMail())
                     .mail(userDTO.getMail())
                     .termsAndConditions(true)
+                    .remainingQuackCount(500)
+                    .remainingHateCount(500)
                     .password(password)
                     .popularity(0)
                     .role(Role.ROLE_USER)
@@ -69,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(userEntity);
 
-            emailService.sendMail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+            mailService.sendMail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
                             "<a href=" +
                             "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
                             "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>",
@@ -77,29 +78,9 @@ public class UserServiceImpl implements UserService {
 
             logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getMail());
         } else {
-            logger.error("Thrown.WrongDataException");
             throw new WrongDataException("Not allowed sign up operation, if you don't agree our terms and conditions");
         }
 
-
-    }
-
-    public String getUserIdByEmail(String token, String mail) {
-        logger.info("ActionLog.getCustomerIdByEmail.start : mail {}", mail);
-        UserInfo userInfo = authenticationService.validateToken(token);
-        if (!userInfo.getRole().equals("ROLE_ADMIN")) {
-            logger.error("ActionLog.AuthenticationException.Thrown");
-            throw new AuthenticationException("You do not have rights for access");
-        }
-
-        UserEntity foundUser = userRepository.findByMail(mail);
-        if (foundUser != null) {
-            logger.info("ActionLog.getCustomerIdByEmail.stop.success : mail {}", mail);
-            return foundUser.getId().toString();
-        } else {
-            logger.error("ActionLog.WrongDataException.thrown");
-            throw new WrongDataException("No such email is found");
-        }
 
     }
 
@@ -113,7 +94,6 @@ public class UserServiceImpl implements UserService {
             user.setStatus(Status.CONFIRMED);
             userRepository.save(user);
         } else {
-            logger.error("ActionLog.WrongDataException.thrown");
             throw new WrongDataException("Not found such user");
         }
 
@@ -130,14 +110,13 @@ public class UserServiceImpl implements UserService {
 
             String token = tokenUtil.generateTokenWithEmail(email);
 
-            emailService.sendMail("<h2>" + "Reset Password" + "</h2>" + "</br>" +
+            mailService.sendMail("<h2>" + "Reset Password" + "</h2>" + "</br>" +
                             "<a href=" +
                             "http://virustat.org/reset.html?token=" + token + ">" +
                             "http://virustat.org/reset.html?token=" + token + "</a>",
                     email, "Your reset password letter");
 
         } else {
-            logger.error("ActionLog.WrongDataException.thrown");
             throw new WrongDataException("No such user found!");
         }
 
@@ -165,11 +144,10 @@ public class UserServiceImpl implements UserService {
 
 
         } else {
-            logger.info("ActionLog.WrongDataException.thrown");
             throw new WrongDataException("Not found such user!");
         }
 
-        emailService.sendMail("<h2>" + "Your password has been changed successfully" + "</h2>",
+        mailService.sendMail("<h2>" + "Your password has been changed successfully" + "</h2>",
                 email, "Successfully Changed");
 
         logger.info("ActionLog.resetPassword.stop.success");
@@ -185,7 +163,6 @@ public class UserServiceImpl implements UserService {
             return UserMapper.INSTANCE.entityToDto(user.get());
 
         } else {
-
             throw new WrongDataException("Not found such user");
         }
     }
@@ -219,7 +196,6 @@ public class UserServiceImpl implements UserService {
             userEntity.setPopularity(userEntity.getPopularity() + 1);
             userRepository.save(userEntity);
         } else {
-            logger.error("Thrown.WrongDataException");
             throw new WrongDataException("Not found such user");
         }
 
@@ -235,6 +211,86 @@ public class UserServiceImpl implements UserService {
         List<UserDetail> populars = UserMapper.INSTANCE.entityToDtoList(users);
         logger.info("ActionLog.getPopularUsers.stop.success");
         return populars;
+    }
+
+    @Override
+    public void updateRemainingQuackCount(String token) {
+        logger.info("ActionLog.updateRemainingQuackCount.start");
+        UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
+        Integer userId = Integer.parseInt(userInfo.getUserId());
+
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(
+                () -> new WrongDataException("Not found such user")
+        );
+
+        userEntity.setRemainingQuackCount(userEntity.getRemainingQuackCount() - 1);
+        userRepository.save(userEntity);
+
+        logger.info("ActionLog.updateRemainingQuackCount.stop.success");
+
+    }
+
+    @Override
+    public void updateRemainingHateCount(String token) {
+        logger.info("ActionLog.updateRemainingHateCount.start");
+        UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
+        Integer userId = Integer.parseInt(userInfo.getUserId());
+
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(
+                () -> new WrongDataException("Not found such user")
+        );
+
+        userEntity.setRemainingHateCount(userEntity.getRemainingHateCount() - 1);
+        userRepository.save(userEntity);
+
+        logger.info("ActionLog.updateRemainingHateCount.stop.success");
+
+    }
+
+    @Override
+    public Integer getRemainingQuackCount(String token) {
+        logger.info("ActionLog.getRemainingQuackCount.start");
+        UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
+        Integer userId = Integer.parseInt(userInfo.getUserId());
+
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(
+                () -> new WrongDataException("Not found such user")
+        );
+
+        logger.info("ActionLog.getRemainingQuackCount.stop.success");
+        return userEntity.getRemainingQuackCount();
+    }
+
+    @Override
+    public Integer getRemainingHateCount(String token) {
+        logger.info("ActionLog.getRemainingHateCount.start");
+        UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
+        Integer userId = Integer.parseInt(userInfo.getUserId());
+
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(
+                () -> new WrongDataException("Not found such user")
+        );
+
+        logger.info("ActionLog.getRemainingHateCount.stop.success");
+        return userEntity.getRemainingHateCount();
+    }
+
+    @Override
+    @Scheduled(cron = "0 52 23 * * ?")  // at 23:59 every day
+    public void refreshRemainingQuackAndHateCount() {
+        logger.info("ActionLog.refreshRemainingQuackAndHateCount.start");
+        if (!userRepository.findAll().isEmpty()) {
+            userRepository.findAll()
+                    .forEach(userEntity -> {
+                        userEntity.setRemainingQuackCount(500);
+                        userEntity.setRemainingHateCount(500);
+                        userRepository.save(userEntity);
+                    });
+        } else {
+            throw new WrongDataException("There aren't any user in database");
+        }
+
+        logger.info("ActionLog.refreshRemainingQuackAndHateCount.stop.success");
     }
 
 

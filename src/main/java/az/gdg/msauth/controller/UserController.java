@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -105,8 +106,39 @@ public class UserController {
     @GetMapping("/popular-users")
     @ApiOperation("get most popular users")
     public List<UserDetail> getPopularUsers() {
-        logger.debug("getThreePopularUsers start");
+        logger.debug("getPopularUsers start");
         return userService.getPopularUsers();
     }
+
+    @ApiOperation("update remaining quack count when user likes some article")
+    @PutMapping("/update-remaining-quack-count")
+    public void updateRemainingQuackCount(@RequestHeader("X-Auth-Token") String token) {
+        logger.debug("updateRemainingQuackCount start");
+        userService.updateRemainingQuackCount(token);
+        logger.debug("updateRemainingQuackCount stop");
+    }
+
+    @ApiOperation("update remaining hate count when user hates some article")
+    @PutMapping("/update-remaining-hate-count")
+    public void updateRemainingHateCount(@RequestHeader("X-Auth-Token") String token) {
+        logger.debug("updateRemainingHateCount start");
+        userService.updateRemainingHateCount(token);
+        logger.debug("updateRemainingHateCount stop");
+    }
+
+    @ApiOperation("get remaining quack count")
+    @GetMapping("/get-remaining-quack-count")
+    public Integer getRemainingQuackCount(@RequestHeader("X-Auth-Token") String token) {
+        logger.debug("getRemainingQuackCount start");
+        return userService.getRemainingQuackCount(token);
+    }
+
+    @ApiOperation("get remaining hate count")
+    @GetMapping("/get-remaining-hate-count")
+    public Integer getRemainingHateCount(@RequestHeader("X-Auth-Token") String token) {
+        logger.debug("updateRemainingHateCount start");
+        return userService.getRemainingHateCount(token);
+    }
+
 
 }

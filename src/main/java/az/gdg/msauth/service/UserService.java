@@ -9,8 +9,6 @@ public interface UserService {
 
     void signUp(UserDTO userDTO);
 
-    String getUserIdByEmail(String token, String email);
-
     void verifyAccount(String token);
 
     void sendResetPasswordLinkToMail(String email);
@@ -24,6 +22,16 @@ public interface UserService {
     void addPopularity(Integer userId);
 
     List<UserDetail> getPopularUsers();
+
+    void updateRemainingQuackCount(String token);
+
+    void updateRemainingHateCount(String token);
+
+    Integer getRemainingQuackCount(String token);
+
+    Integer getRemainingHateCount(String token);
+
+    void refreshRemainingQuackAndHateCount();
 
 
 }

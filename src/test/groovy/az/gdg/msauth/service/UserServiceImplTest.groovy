@@ -8,7 +8,7 @@ import az.gdg.msauth.security.exception.AuthenticationException
 import az.gdg.msauth.security.model.dto.UserInfo
 import az.gdg.msauth.security.service.impl.AuthenticationServiceImpl
 import az.gdg.msauth.security.util.TokenUtil
-import az.gdg.msauth.service.impl.EmailServiceImpl
+import az.gdg.msauth.service.impl.MailServiceImpl
 import az.gdg.msauth.service.impl.UserServiceImpl
 import spock.lang.Ignore
 import spock.lang.Specification
@@ -20,7 +20,7 @@ class UserServiceImplTest extends Specification {
     UserRepository userRepository
     AuthenticationServiceImpl authenticationServiceImpl
     UserServiceImpl userService
-    EmailServiceImpl emailServiceImpl
+    MailServiceImpl emailServiceImpl
     TokenUtil tokenUtil
 
     def setup() {

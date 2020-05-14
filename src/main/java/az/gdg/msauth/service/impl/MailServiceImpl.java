@@ -1,7 +1,7 @@
 package az.gdg.msauth.service.impl;
 
 import az.gdg.msauth.model.dto.MailDTO;
-import az.gdg.msauth.service.EmailService;
+import az.gdg.msauth.service.MailService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +15,9 @@ import java.util.Collections;
 @Service
 @EnableBinding(Source.class)
 @AllArgsConstructor
-public class EmailServiceImpl implements EmailService {
+public class MailServiceImpl implements MailService {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MailServiceImpl.class);
     private final Source source;
 
     @Override
