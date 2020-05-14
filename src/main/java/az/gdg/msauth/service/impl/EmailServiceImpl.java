@@ -26,16 +26,16 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmail(String url, String email, String subject) {
-        logger.info("Action.sendEmail.start : email {}", email);
-        MailDTO mail = new MailDTO().builder()
-                .to(Collections.singletonList(email))
+    public void sendMail(String url, String mail, String subject) {
+        logger.info("Action.sendMail.start : mail {}", mail);
+        MailDTO mailDTO = MailDTO.builder()
+                .to(Collections.singletonList(mail))
                 .subject(subject)
                 .body(url)
                 .build();
 
-        sendToQueue(mail);
+        sendToQueue(mailDTO);
 
-        logger.info("Action.sendEmail.stop.success : email {}", email);
+        logger.info("Action.sendEmail.stop.success : mail {}", mail);
     }
 }

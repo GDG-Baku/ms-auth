@@ -29,37 +29,37 @@ public class TokenUtil {
     private Long expiration;
 
     public UserInfo getUserInfoFromToken(String token) {
-        logger.info("UtilLog.getUserInfoFromToken.start : token {}", token);
+        logger.info("UtilLog.getUserInfoFromToken.start");
         String userId = getClaimFromToken(token, Claims::getId);
-        String email = getClaimFromToken(token, Claims::getSubject);
+        String mail = getClaimFromToken(token, Claims::getSubject);
         String role = getAllClaimsFromToken(token).get("role").toString();
         String status = getAllClaimsFromToken(token).get("status").toString();
-        logger.info("UtilLog.getUserInfoFromToken.stop.success : token {}", token);
+        logger.info("UtilLog.getUserInfoFromToken.stop.success");
         return UserInfo
                 .builder()
                 .role(role)
                 .status(status)
                 .userId(userId)
-                .email(email)
+                .mail(mail)
                 .build();
     }
 
-    public String getEmailFromToken(String token) {
-        logger.info("UtilLog.getEmailFromToken.start : token {}", token);
-        String email = getAllClaimsFromToken(token).get("email").toString();
-        logger.info("UtilLog.getEmailFromToken.start.success : token {}", token);
-        return email;
+    public String getMailFromToken(String token) {
+        logger.info("UtilLog.getEmailFromToken.start");
+        String mail = getAllClaimsFromToken(token).get("mail").toString();
+        logger.info("UtilLog.getEmailFromToken.start.success");
+        return mail;
     }
 
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        logger.info("UtilLog.getClaimFromToken.start : token {}", token);
+        logger.info("UtilLog.getClaimFromToken.start");
         Claims claims = getAllClaimsFromToken(token);
-        logger.info("UtilLog.getClaimFromToken.stop.success : token {}", token);
+        logger.info("UtilLog.getClaimFromToken.stop.success");
         return claimsResolver.apply(claims);
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        logger.info("UtilLog.getAllClaimsFromToken.start : token {}", token);
+        logger.info("UtilLog.getAllClaimsFromToken.start");
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
@@ -92,15 +92,15 @@ public class TokenUtil {
                 .compact();
     }
 
-    public String generateTokenWithEmail(String email) {
-        logger.info("UtilLog.generateTokenForResetPasswordURL.start : email {}", email);
+    public String generateTokenWithEmail(String mail) {
+        logger.info("UtilLog.generateTokenForResetPasswordURL.start : mail {}", mail);
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", email);
-        logger.info("UtilLog.generateTokenForResetPasswordURL.stop.success : email {}", email);
-        return doGenerateTokenWithEmailL(claims);
+        claims.put("mail", mail);
+        logger.info("UtilLog.generateTokenForResetPasswordURL.stop.success : mail {}", mail);
+        return doGenerateTokenWithMail(claims);
     }
 
-    public String doGenerateTokenWithEmailL(Map<String, Object> claims) {
+    public String doGenerateTokenWithMail(Map<String, Object> claims) {
         logger.info("UtilLog.doGenerateTokenForResetPasswordURL.start");
         Date createdDate = clock.now();
         Date expirationDate = calculateExpirationDate(createdDate);
@@ -119,23 +119,23 @@ public class TokenUtil {
     }
 
     public boolean isTokenValid(String token) {
-        logger.info("UtilLog.isTokenValid.start : token {}", token);
+        logger.info("UtilLog.isTokenValid.start");
         if (Objects.isNull(token)) {
             return false;
         }
-        logger.info("UtilLog.isTokenValid.stop.success : token {}", token);
+        logger.info("UtilLog.isTokenValid.stop.success");
         return !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
-        logger.info("UtilLog.isTokenExpired.start : token {}", token);
+        logger.info("UtilLog.isTokenExpired.start");
         Date expirationDate = getExpirationDateFromToken(token);
-        logger.info("UtilLog.isTokenExpired.stop.success : token {}", token);
+        logger.info("UtilLog.isTokenExpired.stop.success");
         return expirationDate.before(clock.now());
     }
 
     private Date getExpirationDateFromToken(String token) {
-        logger.info("UtilLog.getExpirationDateFromToken.start : token {}", token);
+        logger.info("UtilLog.getExpirationDateFromToken.start");
         return getClaimFromToken(token, Claims::getExpiration);
     }
 

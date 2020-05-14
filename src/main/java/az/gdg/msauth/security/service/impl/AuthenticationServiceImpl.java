@@ -32,10 +32,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public JwtAuthenticationResponse createAuthenticationToken(JwtAuthenticationRequest request) {
-        logger.info("ActionLog.createAuthenticationToken.start : email {}", request.getEmail());
+        logger.info("ActionLog.createAuthenticationToken.start : mail {}", request.getMail());
 
-        authenticate(request.getEmail(), request.getPassword());
-        UserEntity userEntity = userRepository.findByEmail(request.getEmail());
+        authenticate(request.getMail(), request.getPassword());
+        UserEntity userEntity = userRepository.findByMail(request.getMail());
 
         if (userEntity != null) {
 
@@ -44,13 +44,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     String userId = userEntity.getId().toString();
                     String role = userEntity.getRole().toString();
                     String status = userEntity.getStatus().toString();
-                    String token = tokenUtil.generateToken(request.getEmail(), userId, role, status);
+                    String token = tokenUtil.generateToken(request.getMail(), userId, role, status);
 
-                    logger.info("ActionLog.createAuthenticationToken.stop.success : email {}", request.getEmail());
+                    logger.info("ActionLog.createAuthenticationToken.stop.success : mail {}", request.getMail());
                     return new JwtAuthenticationResponse(token);
                 case "REGISTERED":
                     throw new AuthenticationException("Your registration is not verified," +
-                            " please check your email for verification link which has been sent");
+                            " please check your mail for verification link which has been sent");
                 case "BLOCKED":
                     throw new AuthenticationException("Your account has been blocked by admins, please contact us");
                 default:
@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         } else {
             logger.info("ActionLog.createAuthenticationToken.stop.WrongDataException.thrown");
-            throw new WrongDataException("Email is not registered");
+            throw new WrongDataException("Mail is not registered");
         }
 
         return null;
@@ -85,9 +85,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public UserInfo validateToken(String token) {
-        logger.info("ActionLog.validateToken.start : token {}", token);
+        logger.info("ActionLog.validateToken.start");
         tokenUtil.isTokenValid(token);
-        logger.info("ActionLog.validateToken.stop.success : token {}", token);
+        logger.info("ActionLog.validateToken.stop.success");
 
         return tokenUtil.getUserInfoFromToken(token);
     }

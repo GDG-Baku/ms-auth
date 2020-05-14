@@ -43,23 +43,23 @@ public class UserServiceImpl implements UserService {
     }
 
     public void signUp(UserDTO userDTO) {
-        logger.info("ActionLog.signUp user.start : email {} ", userDTO.getEmail());
+        logger.info("ActionLog.signUp user.start : email {} ", userDTO.getMail());
 
         if (userDTO.getTermsAndConditions()) {
-            UserEntity checkedEmail = userRepository.findByEmail(userDTO.getEmail());
+            UserEntity checkedEmail = userRepository.findByMail(userDTO.getMail());
             if (checkedEmail != null) {
                 logger.error("ActionLog.WrongDataException.thrown");
                 throw new WrongDataException("This email already exists");
             }
 
-            String token = tokenUtil.generateTokenWithEmail(userDTO.getEmail());
+            String token = tokenUtil.generateTokenWithEmail(userDTO.getMail());
             String password = new BCryptPasswordEncoder().encode(userDTO.getPassword());
             UserEntity userEntity = UserEntity
                     .builder()
                     .firstName(userDTO.getFirstName())
                     .lastName(userDTO.getLastName())
-                    .username(userDTO.getEmail())
-                    .email(userDTO.getEmail())
+                    .username(userDTO.getMail())
+                    .mail(userDTO.getMail())
                     .termsAndConditions(true)
                     .password(password)
                     .popularity(0)
@@ -69,13 +69,13 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(userEntity);
 
-            emailService.sendEmail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+            emailService.sendMail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
                             "<a href=" +
                             "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
                             "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>",
-                    userDTO.getEmail(), "Your verification letter");
+                    userDTO.getMail(), "Your verification letter");
 
-            logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getEmail());
+            logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getMail());
         } else {
             logger.error("Thrown.WrongDataException");
             throw new WrongDataException("Not allowed sign up operation, if you don't agree our terms and conditions");
@@ -84,17 +84,17 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public String getUserIdByEmail(String token, String email) {
-        logger.info("ActionLog.getCustomerIdByEmail.start : email {}", email);
+    public String getUserIdByEmail(String token, String mail) {
+        logger.info("ActionLog.getCustomerIdByEmail.start : mail {}", mail);
         UserInfo userInfo = authenticationService.validateToken(token);
         if (!userInfo.getRole().equals("ROLE_ADMIN")) {
             logger.error("ActionLog.AuthenticationException.Thrown");
             throw new AuthenticationException("You do not have rights for access");
         }
 
-        UserEntity foundUser = userRepository.findByEmail(email);
+        UserEntity foundUser = userRepository.findByMail(mail);
         if (foundUser != null) {
-            logger.info("ActionLog.getCustomerIdByEmail.stop.success : email {}", email);
+            logger.info("ActionLog.getCustomerIdByEmail.stop.success : mail {}", mail);
             return foundUser.getId().toString();
         } else {
             logger.error("ActionLog.WrongDataException.thrown");
@@ -105,32 +105,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void verifyAccount(String token) {
-        logger.info("ActionLog.verifyAccount.start : token {}", token);
-        String email = tokenUtil.getEmailFromToken(token);
-        UserEntity user = userRepository.findByEmail(email);
+        logger.info("ActionLog.verifyAccount.start");
+        String email = tokenUtil.getMailFromToken(token);
+        UserEntity user = userRepository.findByMail(email);
 
         if (user != null) {
             user.setStatus(Status.CONFIRMED);
             userRepository.save(user);
         } else {
             logger.error("ActionLog.WrongDataException.thrown");
-            throw new WrongDataException("No found such user");
+            throw new WrongDataException("Not found such user");
         }
 
-        logger.info("ActionLog.verifyAccount.stop.success : token {}", token);
+        logger.info("ActionLog.verifyAccount.stop.success");
 
     }
 
     @Override
     public void sendResetPasswordLinkToMail(String email) {
         logger.info("ActionLog.sendResetPasswordLinkToMail.start : email {}", email);
-        UserEntity user = userRepository.findByEmail(email);
+        UserEntity user = userRepository.findByMail(email);
 
         if (user != null) {
 
             String token = tokenUtil.generateTokenWithEmail(email);
 
-            emailService.sendEmail("<h2>" + "Reset Password" + "</h2>" + "</br>" +
+            emailService.sendMail("<h2>" + "Reset Password" + "</h2>" + "</br>" +
                             "<a href=" +
                             "http://virustat.org/reset.html?token=" + token + ">" +
                             "http://virustat.org/reset.html?token=" + token + "</a>",
@@ -147,10 +147,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(String token, String password) {
-        logger.info("ActionLog.resetPassword.start : token {}", token);
-        String email = tokenUtil.getEmailFromToken(token);
+        logger.info("ActionLog.resetPassword.start");
+        String email = tokenUtil.getMailFromToken(token);
 
-        UserEntity user = userRepository.findByEmail(email);
+        UserEntity user = userRepository.findByMail(email);
 
         if (user != null) {
             boolean check = new BCryptPasswordEncoder().matches(password, user.getPassword());
@@ -166,13 +166,13 @@ public class UserServiceImpl implements UserService {
 
         } else {
             logger.info("ActionLog.WrongDataException.thrown");
-            throw new WrongDataException("No found such user!");
+            throw new WrongDataException("Not found such user!");
         }
 
-        emailService.sendEmail("<h2>" + "Your password has been changed successfully" + "</h2>",
+        emailService.sendMail("<h2>" + "Your password has been changed successfully" + "</h2>",
                 email, "Successfully Changed");
 
-        logger.info("ActionLog.resetPassword.stop.success : token {}", token);
+        logger.info("ActionLog.resetPassword.stop.success");
 
     }
 
@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
 
         } else {
 
-            throw new WrongDataException("No found such user");
+            throw new WrongDataException("Not found such user");
         }
     }
 
@@ -220,7 +220,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(userEntity);
         } else {
             logger.error("Thrown.WrongDataException");
-            throw new WrongDataException("No found such user");
+            throw new WrongDataException("Not found such user");
         }
 
         logger.info("ActionLog.addPopularity.stop.success : userId {}", userId);

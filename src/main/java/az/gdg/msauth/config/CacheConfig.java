@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDateTime;
-
 @Configuration
 @EnableCaching
 @EnableScheduling
@@ -24,12 +22,12 @@ public class CacheConfig {
 
     @Scheduled(cron = "0 59 23 * * ?")  // at 23:59 every day
     public void clearCacheSchedule() {
-        logger.info("Config.clearCacheSchedule.start : date {}", LocalDateTime.now());
+        logger.info("Config.clearCacheSchedule.start");
         for (String name : cacheManager.getCacheNames()) {
             cacheManager.getCache(name).clear();
         }
 
-        logger.info("Config.clearCacheSchedule.stop.success : date {}", LocalDateTime.now());
+        logger.info("Config.clearCacheSchedule.stop.success");
 
     }
 }

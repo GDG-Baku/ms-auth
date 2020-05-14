@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
-    UserEntity findByEmail(String email);
+    UserEntity findByMail(String mail);
 
     List<UserEntity> findFirst3ByOrderByPopularityDesc();
 }

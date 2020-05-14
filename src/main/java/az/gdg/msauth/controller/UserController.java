@@ -43,25 +43,16 @@ public class UserController {
     @PostMapping(value = "/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     public void signUp(@RequestBody @Valid UserDTO userDTO) {
-        logger.debug("signUp user start : email {}", userDTO.getEmail());
+        logger.debug("signUp user start : mail {}", userDTO.getMail());
         userService.signUp(userDTO);
-        logger.debug("signUp user end : email {}", userDTO.getEmail());
+        logger.debug("signUp user end : mail {}", userDTO.getMail());
     }
 
     @ApiOperation("get user info")
     @GetMapping("/info")
     public UserInfo getUserInfo(@RequestHeader("X-Auth-Token") String token) {
-        logger.debug("getUserInfo start : token {}", token);
+        logger.debug("getUserInfo start");
         return authenticationService.validateToken(token);
-    }
-
-    @ApiOperation("get userId by email")
-    @GetMapping("/id/by/email/{email}")
-    public String getUserIdByEmail(
-            @RequestHeader("X-Auth-Token") String token,
-            @PathVariable(name = "email") String email) {
-        logger.debug("getUserIdByEmail by email start : email {}", email);
-        return userService.getUserIdByEmail(token, email);
     }
 
     @ApiOperation("get user by id for blog service")
@@ -81,27 +72,27 @@ public class UserController {
     @ApiOperation("verify account when user registers")
     @GetMapping(value = "/verify-account")
     public String verifyAccount(@RequestParam("token") String token) {
-        logger.debug("verifyAccount start : token {}", token);
+        logger.debug("verifyAccount start");
         userService.verifyAccount(token);
-        logger.debug("verifyAccount stop : token {}", token);
+        logger.debug("verifyAccount stop");
         return "Your account is verified, now you can log in";
     }
 
     @ApiOperation("send reset password link to mail")
     @PostMapping(value = "/forgot-password")
-    public void sendResetPasswordLinkToMail(@RequestBody String email) {
-        logger.debug("sendResetPasswordLinkToMail start : email {}", email);
-        userService.sendResetPasswordLinkToMail(email);
-        logger.debug("sendResetPasswordLinkToMail stop : email {}", email);
+    public void sendResetPasswordLinkToMail(@RequestBody String mail) {
+        logger.debug("sendResetPasswordLinkToMail start : mail {}", mail);
+        userService.sendResetPasswordLinkToMail(mail);
+        logger.debug("sendResetPasswordLinkToMail stop : mail {}", mail);
     }
 
     @ApiOperation("reset password")
     @PostMapping(value = "/reset-password")
     public void resetPassword(@RequestHeader("X-Auth-Token") String token,
                               @RequestBody String password) {
-        logger.debug("resetPassword start : token {}", token);
+        logger.debug("resetPassword start");
         userService.resetPassword(token, password);
-        logger.debug("resetPassword stop : token {}", token);
+        logger.debug("resetPassword stop");
     }
 
     @GetMapping("/popularity/{userId}")

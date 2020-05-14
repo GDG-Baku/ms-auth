@@ -13,5 +13,5 @@ public class UserInfo {
     private String role;
     private String status;
     private String userId;
-    private String email;
+    private String mail;
 }

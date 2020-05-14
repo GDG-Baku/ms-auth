@@ -22,7 +22,7 @@ public class UserValidator implements
     public boolean isValid(UserDTO value, ConstraintValidatorContext context) {
         return isNameValid(value.getFirstName(), context) &&
                 isSurnameValid(value.getLastName(), context) &&
-                isEmailValid(value.getEmail(), context) &&
+                isMailValid(value.getMail(), context) &&
                 isPasswordValid(value.getPassword(), context);
     }
 
@@ -42,11 +42,11 @@ public class UserValidator implements
         return true;
     }
 
-    private boolean isEmailValid(String email, ConstraintValidatorContext context) {
-        if (email == null ||
-                email.isEmpty() ||
-                !email.matches("^([a-zA-Z0-9_\\\\.-]+)@([a-zA-Z0-9-]+).([a-z]{2,8})(.[a-z]{2,8})?$")) {
-            violationHelper.addViolation(context, "email", "Email is not valid");
+    private boolean isMailValid(String mail, ConstraintValidatorContext context) {
+        if (mail == null ||
+                mail.isEmpty() ||
+                !mail.matches("^([a-zA-Z0-9_\\\\.-]+)@([a-zA-Z0-9-]+).([a-z]{2,8})(.[a-z]{2,8})?$")) {
+            violationHelper.addViolation(context, "mail", "Mail is not valid");
             return false;
         }
         return true;

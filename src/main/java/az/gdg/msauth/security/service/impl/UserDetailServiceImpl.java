@@ -23,18 +23,18 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserEntity user = repository.findByEmail(username);
+        UserEntity user = repository.findByMail(username);
         if (user != null) {
             return buildSecurityUser(user);
         } else {
-            throw new WrongDataException("No such email is registered");
+            throw new WrongDataException("No such mail is registered");
         }
 
     }
 
     private CustomUserDetail buildSecurityUser(UserEntity user) {
         return CustomUserDetail.builder()
-                .username(user.getEmail())
+                .username(user.getMail())
                 .password(user.getPassword())
                 .authorities(Collections.singletonList(user.getRole()))
                 .accountNonExpired(true)
