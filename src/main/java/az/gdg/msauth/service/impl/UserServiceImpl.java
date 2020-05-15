@@ -1,6 +1,8 @@
 package az.gdg.msauth.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
+import az.gdg.msauth.exception.ExceedLimitException;
+import az.gdg.msauth.exception.NotFoundException;
 import az.gdg.msauth.exception.WrongDataException;
 import az.gdg.msauth.mapper.UserMapper;
 import az.gdg.msauth.model.dto.UserDTO;
@@ -94,7 +96,7 @@ public class UserServiceImpl implements UserService {
             user.setStatus(Status.CONFIRMED);
             userRepository.save(user);
         } else {
-            throw new WrongDataException("Not found such user");
+            throw new NotFoundException("Not found such user");
         }
 
         logger.info("ActionLog.verifyAccount.stop.success");
@@ -117,7 +119,7 @@ public class UserServiceImpl implements UserService {
                     email, "Your reset password letter");
 
         } else {
-            throw new WrongDataException("No such user found!");
+            throw new NotFoundException("Not found such user!");
         }
 
         logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success : email {}", email);
@@ -144,7 +146,7 @@ public class UserServiceImpl implements UserService {
 
 
         } else {
-            throw new WrongDataException("Not found such user!");
+            throw new NotFoundException("Not found such user!");
         }
 
         mailService.sendMail("<h2>" + "Your password has been changed successfully" + "</h2>",
@@ -163,7 +165,7 @@ public class UserServiceImpl implements UserService {
             return UserMapper.INSTANCE.entityToDto(user.get());
 
         } else {
-            throw new WrongDataException("Not found such user");
+            throw new NotFoundException("Not found such user");
         }
     }
 
@@ -196,7 +198,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setPopularity(userEntity.getPopularity() + 1);
             userRepository.save(userEntity);
         } else {
-            throw new WrongDataException("Not found such user");
+            throw new NotFoundException("Not found such user");
         }
 
         logger.info("ActionLog.addPopularity.stop.success : userId {}", userId);
@@ -220,13 +222,18 @@ public class UserServiceImpl implements UserService {
         Integer userId = Integer.parseInt(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
-                () -> new WrongDataException("Not found such user")
+                () -> new NotFoundException("Not found such user")
         );
 
-        userEntity.setRemainingQuackCount(userEntity.getRemainingQuackCount() - 1);
-        userRepository.save(userEntity);
+        if (userEntity.getRemainingQuackCount() > 0) {
+            userEntity.setRemainingQuackCount(userEntity.getRemainingQuackCount() - 1);
+            userRepository.save(userEntity);
+        } else {
+            throw new ExceedLimitException("You've already used your daily quacks!");
+        }
 
         logger.info("ActionLog.updateRemainingQuackCount.stop.success");
+
 
     }
 
@@ -237,11 +244,16 @@ public class UserServiceImpl implements UserService {
         Integer userId = Integer.parseInt(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
-                () -> new WrongDataException("Not found such user")
+                () -> new NotFoundException("Not found such user")
         );
 
-        userEntity.setRemainingHateCount(userEntity.getRemainingHateCount() - 1);
-        userRepository.save(userEntity);
+        if (userEntity.getRemainingHateCount() > 0) {
+            userEntity.setRemainingHateCount(userEntity.getRemainingHateCount() - 1);
+            userRepository.save(userEntity);
+        } else {
+            throw new ExceedLimitException("You've already used your daily hates!");
+        }
+
 
         logger.info("ActionLog.updateRemainingHateCount.stop.success");
 
@@ -254,7 +266,7 @@ public class UserServiceImpl implements UserService {
         Integer userId = Integer.parseInt(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
-                () -> new WrongDataException("Not found such user")
+                () -> new NotFoundException("Not found such user")
         );
 
         logger.info("ActionLog.getRemainingQuackCount.stop.success");
@@ -268,7 +280,7 @@ public class UserServiceImpl implements UserService {
         Integer userId = Integer.parseInt(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
-                () -> new WrongDataException("Not found such user")
+                () -> new NotFoundException("Not found such user")
         );
 
         logger.info("ActionLog.getRemainingHateCount.stop.success");
@@ -287,7 +299,7 @@ public class UserServiceImpl implements UserService {
                         userRepository.save(userEntity);
                     });
         } else {
-            throw new WrongDataException("There aren't any user in database");
+            throw new NotFoundException("There isn't any user in database");
         }
 
         logger.info("ActionLog.refreshRemainingQuackAndHateCount.stop.success");

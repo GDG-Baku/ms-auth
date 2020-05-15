@@ -96,7 +96,7 @@ public class UserController {
         logger.debug("resetPassword stop");
     }
 
-    @GetMapping("/popularity/{userId}")
+    @PutMapping("/popularity/{userId}")
     @ApiOperation("add popularity to user for his article which is read")
     public void addPopularity(@PathVariable("userId") Integer id) {
         logger.debug("addPopularity start : id {}", id);

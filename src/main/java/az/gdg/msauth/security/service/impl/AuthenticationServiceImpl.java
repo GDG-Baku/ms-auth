@@ -1,6 +1,7 @@
 package az.gdg.msauth.security.service.impl;
 
 import az.gdg.msauth.dao.UserRepository;
+import az.gdg.msauth.exception.NotFoundException;
 import az.gdg.msauth.exception.WrongDataException;
 import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.security.exception.AuthenticationException;
@@ -59,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         } else {
-            throw new WrongDataException("Mail is not registered");
+            throw new NotFoundException("Mail is not registered");
         }
 
         return null;
