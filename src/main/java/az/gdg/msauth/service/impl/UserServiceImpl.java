@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     public void signUp(UserDTO userDTO) {
         logger.info("ActionLog.signUp user.start : email {} ", userDTO.getMail());
 
-        if (userDTO.getTermsAndConditions()) {
+        if (userDTO.getAreTermsAndConditionsConfirmed()) {
             UserEntity checkedEmail = userRepository.findByMail(userDTO.getMail());
             if (checkedEmail != null) {
                 throw new WrongDataException("This email already exists");
@@ -61,7 +61,6 @@ public class UserServiceImpl implements UserService {
                     .lastName(userDTO.getLastName())
                     .username(userDTO.getMail())
                     .mail(userDTO.getMail())
-                    .termsAndConditions(true)
                     .remainingQuackCount(500)
                     .remainingHateCount(500)
                     .password(password)
