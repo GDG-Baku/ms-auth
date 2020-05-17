@@ -27,7 +27,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (user != null) {
             return buildSecurityUser(user);
         } else {
-            throw new WrongDataException("No such mail is registered");
+            throw new WrongDataException("Incorrect login credentials!");
         }
 
     }

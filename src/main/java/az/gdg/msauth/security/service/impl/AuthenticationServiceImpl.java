@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         } else {
-            throw new NotFoundException("Mail is not registered");
+            throw new NotFoundException("Incorrect login credentials!");
         }
 
         return null;
@@ -73,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             try {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             } catch (BadCredentialsException e) {
-                throw new AuthenticationException("Password is not correct!", e);
+                throw new AuthenticationException("Incorrect login credentials!", e);
             }
         } else {
             throw new WrongDataException("Username or Password is null!");

@@ -87,13 +87,13 @@ public class UserController {
         logger.debug("sendResetPasswordLinkToMail stop : mail {}", mail);
     }
 
-    @ApiOperation("reset password")
-    @PostMapping(value = "/reset-password")
-    public void resetPassword(@RequestHeader("X-Auth-Token") String token,
-                              @RequestBody String password) {
-        logger.debug("resetPassword start");
-        userService.resetPassword(token, password);
-        logger.debug("resetPassword stop");
+    @ApiOperation("change password")
+    @PostMapping(value = "/change-password")
+    public void changePassword(@RequestHeader("X-Auth-Token") String token,
+                               @RequestBody String password) {
+        logger.debug("changePassword start");
+        userService.changePassword(token, password);
+        logger.debug("changePassword stop");
     }
 
     @PutMapping("/popularity/{userId}")

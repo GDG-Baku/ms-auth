@@ -126,8 +126,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(String token, String password) {
-        logger.info("ActionLog.resetPassword.start");
+    public void changePassword(String token, String password) {
+        logger.info("ActionLog.changePassword.start");
         String mail = tokenUtil.getMailFromToken(token);
 
         UserEntity user = userRepository.findByMail(mail);
@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
         mailService.sendMail("<h2>" + "Your password has been changed successfully" + "</h2>",
                 mail, "Successfully Changed");
 
-        logger.info("ActionLog.resetPassword.stop.success");
+        logger.info("ActionLog.changePassword.stop.success");
 
     }
 

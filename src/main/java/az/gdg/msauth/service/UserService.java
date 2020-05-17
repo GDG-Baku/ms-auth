@@ -13,7 +13,7 @@ public interface UserService {
 
     void sendResetPasswordLinkToMail(String email);
 
-    void resetPassword(String token, String password);
+    void changePassword(String token, String password);
 
     UserDetail getUserById(int id);
 
