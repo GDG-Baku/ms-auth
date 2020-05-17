@@ -73,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             try {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             } catch (BadCredentialsException e) {
-                throw new AuthenticationException("Bad credentials", e);
+                throw new AuthenticationException("Username or password is not valid!", e);
             }
         } else {
             throw new WrongDataException("Username or Password is null!");

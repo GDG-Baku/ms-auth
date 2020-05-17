@@ -103,34 +103,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendResetPasswordLinkToMail(String email) {
-        logger.info("ActionLog.sendResetPasswordLinkToMail.start : email {}", email);
-        UserEntity user = userRepository.findByMail(email);
+    public void sendResetPasswordLinkToMail(String mail) {
+        logger.info("ActionLog.sendResetPasswordLinkToMail.start : mail {}", mail);
+        UserEntity user = userRepository.findByMail(mail);
 
         if (user != null) {
 
-            String token = tokenUtil.generateTokenWithEmail(email);
+            String token = tokenUtil.generateTokenWithEmail(mail);
 
             mailService.sendMail("<h2>" + "Reset Password" + "</h2>" + "</br>" +
                             "<a href=" +
                             "http://virustat.org/reset.html?token=" + token + ">" +
                             "http://virustat.org/reset.html?token=" + token + "</a>",
-                    email, "Your reset password letter");
+                    mail, "Your reset password letter");
 
         } else {
             throw new NotFoundException("Not found such user!");
         }
 
-        logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success : email {}", email);
+        logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success : mail {}", mail);
 
     }
 
     @Override
     public void resetPassword(String token, String password) {
         logger.info("ActionLog.resetPassword.start");
-        String email = tokenUtil.getMailFromToken(token);
+        String mail = tokenUtil.getMailFromToken(token);
 
-        UserEntity user = userRepository.findByMail(email);
+        UserEntity user = userRepository.findByMail(mail);
 
         if (user != null) {
             boolean check = new BCryptPasswordEncoder().matches(password, user.getPassword());
@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
         }
 
         mailService.sendMail("<h2>" + "Your password has been changed successfully" + "</h2>",
-                email, "Successfully Changed");
+                mail, "Successfully Changed");
 
         logger.info("ActionLog.resetPassword.stop.success");
 

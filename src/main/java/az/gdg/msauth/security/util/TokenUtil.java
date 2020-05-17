@@ -46,7 +46,7 @@ public class TokenUtil {
 
     public String getMailFromToken(String token) {
         logger.info("UtilLog.getEmailFromToken.start");
-        String mail = getAllClaimsFromToken(token).get("mail").toString();
+        String mail = getClaimFromToken(token, Claims::getSubject);
         logger.info("UtilLog.getEmailFromToken.start.success");
         return mail;
     }
@@ -93,20 +93,12 @@ public class TokenUtil {
     }
 
     public String generateTokenWithEmail(String mail) {
-        logger.info("UtilLog.generateTokenForResetPasswordURL.start : mail {}", mail);
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("mail", mail);
-        logger.info("UtilLog.generateTokenForResetPasswordURL.stop.success : mail {}", mail);
-        return doGenerateTokenWithMail(claims);
-    }
-
-    public String doGenerateTokenWithMail(Map<String, Object> claims) {
-        logger.info("UtilLog.doGenerateTokenForResetPasswordURL.start");
+        logger.info("UtilLog.generateTokenWithEmail.start");
         Date createdDate = clock.now();
         Date expirationDate = calculateExpirationDate(createdDate);
-        logger.info("UtilLog.doGenerateTokenForResetPasswordURL.stop.success");
+        logger.info("UtilLog.generateTokenWithEmail.stop.success");
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(mail)
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
