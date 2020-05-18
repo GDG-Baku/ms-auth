@@ -64,8 +64,8 @@ public class UserController {
     }
 
     @ApiOperation("get users by id for blog service")
-    @GetMapping("/get-users")
-    public List<UserDetail> getUsersById(@RequestParam("userIds") List<Integer> userIds) {
+    @PostMapping("/get-users")
+    public List<UserDetail> getUsersById(@RequestBody List<Integer> userIds) {
         logger.debug("getUsersById start : userId {}", userIds);
         return userService.getUsersById(userIds);
     }
