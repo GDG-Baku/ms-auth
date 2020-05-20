@@ -32,4 +32,7 @@ jwt:
   header: X-Auth-Token
 swagger:
   enabled: true
+service:
+  url:
+    storage: https://gdg-drive.herokuapp.com/get-links
 

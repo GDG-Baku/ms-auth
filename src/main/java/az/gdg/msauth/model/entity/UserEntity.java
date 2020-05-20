@@ -43,6 +43,9 @@ public class UserEntity {
     @Column(name = "mail")
     private String mail;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name = "first_name")
     private String firstName;
 

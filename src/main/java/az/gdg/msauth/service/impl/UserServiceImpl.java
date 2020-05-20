@@ -1,5 +1,6 @@
 package az.gdg.msauth.service.impl;
 
+import az.gdg.msauth.client.MsStorageClient;
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.exception.ExceedLimitException;
 import az.gdg.msauth.exception.NotFoundException;
@@ -11,7 +12,6 @@ import az.gdg.msauth.model.entity.UserEntity;
 import az.gdg.msauth.security.model.Role;
 import az.gdg.msauth.security.model.Status;
 import az.gdg.msauth.security.model.dto.UserInfo;
-import az.gdg.msauth.security.service.AuthenticationService;
 import az.gdg.msauth.security.util.TokenUtil;
 import az.gdg.msauth.service.MailService;
 import az.gdg.msauth.service.UserService;
@@ -21,6 +21,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,13 +34,13 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
-    private final AuthenticationService authenticationService;
+    private final MsStorageClient msStorageClient;
     private final MailService mailService;
 
-    public UserServiceImpl(UserRepository userRepository, AuthenticationService authenticationService,
+    public UserServiceImpl(UserRepository userRepository, MsStorageClient msStorageClient,
                            MailService mailService, TokenUtil tokenUtil) {
         this.userRepository = userRepository;
-        this.authenticationService = authenticationService;
+        this.msStorageClient = msStorageClient;
         this.mailService = mailService;
         this.tokenUtil = tokenUtil;
     }
@@ -88,8 +89,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void verifyAccount(String token) {
         logger.info("ActionLog.verifyAccount.start");
-        String email = tokenUtil.getMailFromToken(token);
-        UserEntity user = userRepository.findByMail(email);
+        String mail = tokenUtil.getMailFromToken(token);
+        UserEntity user = userRepository.findByMail(mail);
 
         if (user != null) {
             user.setStatus(Status.CONFIRMED);
@@ -302,6 +303,28 @@ public class UserServiceImpl implements UserService {
         }
 
         logger.info("ActionLog.refreshRemainingQuackAndHateCount.stop.success");
+    }
+
+    @Override
+    public void updateImage(String token, MultipartFile multipartFile) {
+        logger.info("ActionLog.updateImage.start : fileName {} ", multipartFile.getOriginalFilename());
+        UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
+        Optional<UserEntity> userEntity = userRepository.findById(Integer.parseInt(userInfo.getUserId()));
+
+        if (userEntity.isPresent()) {
+            UserEntity user = userEntity.get();
+            String imageUrl = msStorageClient.uploadFile("Users", multipartFile);
+            user.setImageUrl(imageUrl);
+
+            userRepository.save(user);
+
+
+        } else {
+            throw new NotFoundException("Not found such user");
+        }
+
+
+        logger.info("ActionLog.updateImage.stop.success : fileName {} ", multipartFile.getOriginalFilename());
     }
 
 

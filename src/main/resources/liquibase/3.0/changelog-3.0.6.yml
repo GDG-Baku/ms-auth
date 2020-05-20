@@ -1,11 +1,12 @@
 databaseChangeLog:
   - logicalFilePath: liquibase/3.0/changelog-3.0.6.yml
   - changeSet:
-      id: drop terms_and_conditions column
+      id: add imageUrl column
       author: Murad Isgandarli
       changes:
-        - dropColumn:
+        - addColumn:
             tableName: users
             columns:
               - column:
-                  name: terms_and_conditions
+                  name: image_url
+                  type: varchar(255)

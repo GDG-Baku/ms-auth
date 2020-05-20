@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -138,6 +139,15 @@ public class UserController {
     public Integer getRemainingHateCount(@RequestHeader("X-Auth-Token") String token) {
         logger.debug("updateRemainingHateCount start");
         return userService.getRemainingHateCount(token);
+    }
+
+    @ApiOperation("update image")
+    @PostMapping("/update-image")
+    public void updateImage(@RequestHeader("X-Auth-Token") String token,
+                            @RequestParam MultipartFile multipartFile) {
+        logger.debug("updateImage start");
+        userService.updateImage(token, multipartFile);
+        logger.debug("updateImage stop success");
     }
 
 

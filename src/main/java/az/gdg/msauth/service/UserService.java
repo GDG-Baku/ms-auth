@@ -2,6 +2,7 @@ package az.gdg.msauth.service;
 
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.model.dto.UserDetail;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,6 +33,8 @@ public interface UserService {
     Integer getRemainingHateCount(String token);
 
     void refreshRemainingQuackAndHateCount();
+
+    void updateImage(String token, MultipartFile multipartFile);
 
 
 }

@@ -106,7 +106,7 @@ public class TokenUtil {
     }
 
     private Date calculateExpirationDate(Date createdDate) {
-        logger.info("UtilLog.calculateExpirationDate.start : createdDate {}", createdDate);
+        logger.info("UtilLog.calculateExpirationDate.start");
         return new Date(createdDate.getTime() + expiration * 100);
     }
 
