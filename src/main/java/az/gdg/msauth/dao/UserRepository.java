@@ -12,5 +12,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     UserEntity findByMail(String mail);
 
     List<UserEntity> findFirst3ByOrderByPopularityDesc();
+
+    List<UserEntity> findByIdIn(List<Integer> userIds);
 }
 

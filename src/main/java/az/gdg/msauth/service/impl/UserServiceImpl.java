@@ -4,6 +4,7 @@ import az.gdg.msauth.client.MsStorageClient;
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.exception.ExceedLimitException;
 import az.gdg.msauth.exception.NotFoundException;
+import az.gdg.msauth.exception.StorageException;
 import az.gdg.msauth.exception.WrongDataException;
 import az.gdg.msauth.mapper.UserMapper;
 import az.gdg.msauth.model.dto.UserDTO;
@@ -21,11 +22,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -172,18 +175,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDetail> getUsersById(List<Integer> userIds) {
         logger.info("ActionLog.getUsersById.start : userIds {}", userIds);
-        List<UserDetail> userDetails = new ArrayList<>();
-        for (Integer userId : userIds) {
-            Optional<UserEntity> user = userRepository.findById(userId);
-            if (user.isPresent()) {
-                userDetails.add(UserMapper.INSTANCE.entityToDto(user.get()));
-            } else {
-                continue;
-            }
 
-        }
+        List<UserEntity> users = userRepository.findByIdIn(userIds);
+        List<UserDetail> userDetails = UserMapper.INSTANCE.entityToDtoList(users);
 
-        logger.info("ActionLog.getUsersById.stop.success : userDetails {}", userDetails);
+        logger.info("ActionLog.getUsersById.stop.success : userDetails {}", userDetails
+                .stream()
+                .map(UserDetail::getId).collect(Collectors.toList()));
 
         return userDetails;
     }
@@ -307,12 +305,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateImage(String token, MultipartFile multipartFile) {
-        logger.info("ActionLog.updateImage.start : fileName {} ", multipartFile.getOriginalFilename());
+        logger.info("ActionLog.updateImage.start");
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename(),
+                "File content not be null!"));
+
+        logger.info("ActionLog.updateImage: fileName {} ", fileName);
+
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
         Optional<UserEntity> userEntity = userRepository.findById(Integer.parseInt(userInfo.getUserId()));
 
         if (userEntity.isPresent()) {
             UserEntity user = userEntity.get();
+            if (fileName.contains("..")) {
+                throw new StorageException("Cannot store file with relative path outside current directory " +
+                        fileName);
+            }
+
             String imageUrl = msStorageClient.uploadFile("Users", multipartFile);
             user.setImageUrl(imageUrl);
 

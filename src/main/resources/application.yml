@@ -34,5 +34,5 @@ swagger:
   enabled: true
 service:
   url:
-    storage: https://gdg-drive.herokuapp.com/get-links
+    ms-storage: https://gdg-drive.herokuapp.com/get-links
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 
-@FeignClient(value = "ms-storage-client", url = "${service.url.storage}")
+@FeignClient(value = "ms-storage-client", url = "${service.url.ms-storage}")
 public interface MsStorageClient {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
