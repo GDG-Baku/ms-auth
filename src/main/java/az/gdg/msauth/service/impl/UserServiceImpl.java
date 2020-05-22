@@ -307,7 +307,7 @@ public class UserServiceImpl implements UserService {
     public void updateImage(String token, MultipartFile multipartFile) {
         logger.info("ActionLog.updateImage.start");
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename(),
-                "File content not be null!"));
+                "File content must not be null!"));
 
         logger.info("ActionLog.updateImage: fileName {} ", fileName);
 
