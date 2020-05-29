@@ -3,6 +3,7 @@ package az.gdg.msauth.service.impl;
 import az.gdg.msauth.client.MsStorageClient;
 import az.gdg.msauth.dao.UserRepository;
 import az.gdg.msauth.exception.ExceedLimitException;
+import az.gdg.msauth.exception.NotAllowedException;
 import az.gdg.msauth.exception.NotFoundException;
 import az.gdg.msauth.exception.StorageException;
 import az.gdg.msauth.exception.WrongDataException;
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void signUp(UserDTO userDTO) {
-        logger.info("ActionLog.signUp user.start : email {} ", userDTO.getMail());
+        logger.info("ActionLog.signUp user.start.email : {} ", userDTO.getMail());
 
         if (userDTO.getAreTermsAndConditionsConfirmed()) {
             UserEntity checkedEmail = userRepository.findByMail(userDTO.getMail());
@@ -81,9 +82,9 @@ public class UserServiceImpl implements UserService {
                             "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>",
                     userDTO.getMail(), "Your verification letter");
 
-            logger.info("ActionLog.signUp user.stop.success : email {}", userDTO.getMail());
+            logger.info("ActionLog.signUp user.stop.success.email : {}", userDTO.getMail());
         } else {
-            throw new WrongDataException("Not allowed sign up operation, if you don't agree our terms and conditions");
+            throw new NotAllowedException("Not allowed sign up operation, if you don't agree our terms and conditions");
         }
 
 
@@ -108,7 +109,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendResetPasswordLinkToMail(String mail) {
-        logger.info("ActionLog.sendResetPasswordLinkToMail.start : mail {}", mail);
+        logger.info("ActionLog.sendResetPasswordLinkToMail.start.mail : {}", mail);
         UserEntity user = userRepository.findByMail(mail);
 
         if (user != null) {
@@ -125,7 +126,7 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Not found such user!");
         }
 
-        logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success : mail {}", mail);
+        logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success.mail : {}", mail);
 
     }
 
@@ -161,7 +162,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetail getUserById(int id) {
-        logger.info("ActionLog.getUserById.start : id {}", id);
+        logger.info("ActionLog.getUserById.start.id : {}", id);
         Optional<UserEntity> user = userRepository.findById(id);
 
         if (user.isPresent()) {
@@ -174,12 +175,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDetail> getUsersById(List<Integer> userIds) {
-        logger.info("ActionLog.getUsersById.start : userIds {}", userIds);
+        logger.info("ActionLog.getUsersById.start.userIds : {}", userIds);
 
         List<UserEntity> users = userRepository.findByIdIn(userIds);
         List<UserDetail> userDetails = UserMapper.INSTANCE.entityToDtoList(users);
 
-        logger.info("ActionLog.getUsersById.stop.success : userDetails {}", userDetails
+        logger.info("ActionLog.getUsersById.stop.success.userDetails : {}", userDetails
                 .stream()
                 .map(UserDetail::getId).collect(Collectors.toList()));
 
@@ -188,18 +189,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addPopularity(Integer userId) {
-        logger.info("ActionLog.addPopularity.start : userId {}", userId);
-        Optional<UserEntity> user = userRepository.findById(userId);
+        logger.info("ActionLog.addPopularity.start.userId : {}", userId);
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("Not found such user")
+        );
 
-        if (user.isPresent()) {
-            UserEntity userEntity = user.get();
-            userEntity.setPopularity(userEntity.getPopularity() + 1);
-            userRepository.save(userEntity);
-        } else {
-            throw new NotFoundException("Not found such user");
-        }
+        user.setPopularity(user.getPopularity() + 1);
+        userRepository.save(user);
 
-        logger.info("ActionLog.addPopularity.stop.success : userId {}", userId);
+        logger.info("ActionLog.addPopularity.stop.success.userId : {}", userId);
     }
 
     @Override
@@ -289,8 +287,9 @@ public class UserServiceImpl implements UserService {
     @Scheduled(cron = "0 52 23 * * ?")  // at 23:59 every day
     public void refreshRemainingQuackAndHateCount() {
         logger.info("ActionLog.refreshRemainingQuackAndHateCount.start");
-        if (!userRepository.findAll().isEmpty()) {
-            userRepository.findAll()
+        List<UserEntity> users = userRepository.findAll();
+        if (!users.isEmpty()) {
+            users
                     .forEach(userEntity -> {
                         userEntity.setRemainingQuackCount(500);
                         userEntity.setRemainingHateCount(500);
@@ -309,7 +308,7 @@ public class UserServiceImpl implements UserService {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename(),
                 "File content must not be null!"));
 
-        logger.info("ActionLog.updateImage: fileName {} ", fileName);
+        logger.info("ActionLog.updateImage.fileName : {} ", fileName);
 
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
         Optional<UserEntity> userEntity = userRepository.findById(Integer.parseInt(userInfo.getUserId()));
@@ -332,7 +331,7 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        logger.info("ActionLog.updateImage.stop.success : fileName {} ", multipartFile.getOriginalFilename());
+        logger.info("ActionLog.updateImage.stop.success.fileName : {} ", multipartFile.getOriginalFilename());
     }
 
 

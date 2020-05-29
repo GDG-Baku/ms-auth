@@ -67,21 +67,21 @@ public class TokenUtil {
     }
 
     public String generateToken(String username, String userId, String role, String status) {
-        logger.info("UtilLog.generateToken.start : username {}", username);
+        logger.info("UtilLog.generateToken.start.username : {}", username);
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role);
         claims.put("status", status);
-        logger.info("UtilLog.generateToken.stop.success : username {}", username);
+        logger.info("UtilLog.generateToken.stop.success.username : {}", username);
         return doGenerateToken(claims, username, userId);
     }
 
     public String doGenerateToken(Map<String, Object> claims,
                                   String subject, String userId) {
-        logger.info("UtilLog.doGenerateToken.start : subject {}", subject);
+        logger.info("UtilLog.doGenerateToken.start.subject : {}", subject);
         Date createdDate = clock.now();
         Date expirationDate = calculateExpirationDate(createdDate);
-        logger.info("UtilLog.doGenerateToken.stop.success : subject {}", subject);
+        logger.info("UtilLog.doGenerateToken.stop.success.subject : {}", subject);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)//username

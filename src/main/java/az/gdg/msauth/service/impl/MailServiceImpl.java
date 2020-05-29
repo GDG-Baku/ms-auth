@@ -27,7 +27,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendMail(String url, String mail, String subject) {
-        logger.info("Action.sendMail.start : mail {}", mail);
+        logger.info("Action.sendMail.start.mail : {}", mail);
         MailDTO mailDTO = MailDTO.builder()
                 .to(Collections.singletonList(mail))
                 .subject(subject)
@@ -36,6 +36,6 @@ public class MailServiceImpl implements MailService {
 
         sendToQueue(mailDTO);
 
-        logger.info("Action.sendEmail.stop.success : mail {}", mail);
+        logger.info("Action.sendEmail.stop.success.mail : {}", mail);
     }
 }
