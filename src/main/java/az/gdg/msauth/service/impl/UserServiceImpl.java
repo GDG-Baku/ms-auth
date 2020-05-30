@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -161,16 +160,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetail getUserById(int id) {
+    public UserDetail getUserById(Integer id) {
         logger.info("ActionLog.getUserById.start.id : {}", id);
-        Optional<UserEntity> user = userRepository.findById(id);
 
-        if (user.isPresent()) {
-            return UserMapper.INSTANCE.entityToDto(user.get());
+        UserEntity user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Not found such user")
+        );
 
-        } else {
-            throw new NotFoundException("Not found such user");
-        }
+        logger.info("ActionLog.getUserById.success.id : {}", id);
+
+        return UserMapper.INSTANCE.entityToDto(user);
+
     }
 
     @Override
@@ -180,9 +180,7 @@ public class UserServiceImpl implements UserService {
         List<UserEntity> users = userRepository.findByIdIn(userIds);
         List<UserDetail> userDetails = UserMapper.INSTANCE.entityToDtoList(users);
 
-        logger.info("ActionLog.getUsersById.stop.success.userDetails : {}", userDetails
-                .stream()
-                .map(UserDetail::getId).collect(Collectors.toList()));
+        logger.info("ActionLog.getUsersById.stop.success");
 
         return userDetails;
     }

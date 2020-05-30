@@ -16,7 +16,7 @@ public interface UserService {
 
     void changePassword(String token, String password);
 
-    UserDetail getUserById(int id);
+    UserDetail getUserById(Integer id);
 
     List<UserDetail> getUsersById(List<Integer> userIds);
 

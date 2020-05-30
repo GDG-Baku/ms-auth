@@ -59,7 +59,7 @@ public class UserController {
 
     @ApiOperation("get user by id for blog service")
     @GetMapping("/{userId}")
-    public UserDetail getUserById(@PathVariable("userId") int userId) {
+    public UserDetail getUserById(@PathVariable("userId") Integer userId) {
         logger.debug("getUserById start : userId {}", userId);
         return userService.getUserById(userId);
     }

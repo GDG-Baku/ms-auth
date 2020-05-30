@@ -2,11 +2,13 @@ package az.gdg.msauth.service
 
 import az.gdg.msauth.client.MsStorageClient
 import az.gdg.msauth.dao.UserRepository
+import az.gdg.msauth.exception.ExceedLimitException
 import az.gdg.msauth.exception.NotAllowedException
 import az.gdg.msauth.exception.NotFoundException
 import az.gdg.msauth.exception.WrongDataException
 import az.gdg.msauth.mapper.UserMapper
 import az.gdg.msauth.model.dto.UserDTO
+import az.gdg.msauth.model.dto.UserDetail
 import az.gdg.msauth.model.entity.UserEntity
 import az.gdg.msauth.security.model.dto.UserInfo
 import az.gdg.msauth.security.util.TokenUtil
@@ -103,13 +105,14 @@ class UserServiceImplTest extends Specification {
         given:
             def token = "dsadsfsf"
             def userEntity = new UserEntity()
+            userEntity.setMail("example.com")
 
         when:
             userService.verifyAccount(token)
 
         then:
-            1 * tokenUtil.getMailFromToken(token) >> "example.com"
-            1 * userRepository.findByMail("example.com") >> userEntity
+            1 * tokenUtil.getMailFromToken(token) >> userEntity.getMail()
+            1 * userRepository.findByMail(userEntity.getMail()) >> userEntity
             1 * userRepository.save(userEntity)
             notThrown(NotFoundException)
     }
@@ -119,27 +122,28 @@ class UserServiceImplTest extends Specification {
         given:
             def token = "dsadsfsf"
             def userEntity = null
+            def mail = "example.com"
 
         when:
             userService.verifyAccount(token)
 
         then:
-            1 * tokenUtil.getMailFromToken(token) >> "example.com"
-            1 * userRepository.findByMail("example.com") >> userEntity
+            1 * tokenUtil.getMailFromToken(token) >> mail
+            1 * userRepository.findByMail(mail) >> userEntity
             thrown(NotFoundException)
     }
 
     def "send reset password link to mail if user exists in database"() {
 
         given:
-            def mail = "example.com"
             def userEntity = new UserEntity()
+            userEntity.setMail("example.com")
 
         when: "send mail to service"
-            userService.sendResetPasswordLinkToMail(mail)
+            userService.sendResetPasswordLinkToMail(userEntity.getMail())
 
         then:
-            1 * userRepository.findByMail(mail) >> userEntity
+            1 * userRepository.findByMail(userEntity.getMail()) >> userEntity
             1 * mailServiceImpl.sendMail('<h2>Reset Password</h2></br>' +
                     '<a href=http://virustat.org/reset.html?token=null>http://virustat.org/reset.html?token=null</a>',
                     'example.com',
@@ -164,15 +168,15 @@ class UserServiceImplTest extends Specification {
     def "add popularity if user exists in database"() {
 
         given:
-            def userId = 1
             def userEntity = new UserEntity()
+            userEntity.setId(1)
             userEntity.setPopularity(1)
             def user = Optional.of(userEntity)
         when:
-            userService.addPopularity(userId)
+            userService.addPopularity(userEntity.getId())
 
         then:
-            1 * userRepository.findById(userId) >> user
+            1 * userRepository.findById(userEntity.getId()) >> user
             1 * userRepository.save(userEntity)
             notThrown(NotFoundException)
     }
@@ -207,7 +211,7 @@ class UserServiceImplTest extends Specification {
         then:
             1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
             1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
-            entity.getRemainingQuackCount() >> 12
+            entity.getRemainingQuackCount() == 12
             notThrown(NotFoundException)
     }
 
@@ -244,7 +248,7 @@ class UserServiceImplTest extends Specification {
         then:
             1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
             1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
-            entity.getRemainingHateCount() >> 12
+            entity.getRemainingHateCount() == 12
             notThrown(NotFoundException)
     }
 
@@ -305,7 +309,149 @@ class UserServiceImplTest extends Specification {
 
         then:
             1 * userRepository.findFirst3ByOrderByPopularityDesc() >> listUsers
-            UserMapper.INSTANCE.entityToDtoList(listUsers) >> populars
+            UserMapper.INSTANCE.entityToDtoList(listUsers) == populars
+    }
+
+    def "update remaining quack count if user exists in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def userInfo = new UserInfo()
+            def entity = new UserEntity()
+            entity.setRemainingQuackCount(12)
+            userInfo.setUserId("1")
+            def userEntity = Optional.of(entity)
+
+        when:
+            userService.updateRemainingQuackCount(token)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            1 * userRepository.save(entity)
+            notThrown(NotFoundException)
+    }
+
+    def "should throw NotFoundException and don't update remaining quack count if user doesn't exist in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def userInfo = new UserInfo()
+            userInfo.setUserId("1")
+            def userEntity = Optional.empty()
+
+        when:
+            userService.updateRemainingQuackCount(token)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            thrown(NotFoundException)
+    }
+
+    def "should throw ExceedLimitException and don't update remaining quack count if there is not any remaining quack count in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def userInfo = new UserInfo()
+            def entity = new UserEntity()
+            entity.setRemainingQuackCount(0)
+            userInfo.setUserId("1")
+            def userEntity = Optional.of(entity)
+
+        when:
+            userService.updateRemainingQuackCount(token)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            thrown(ExceedLimitException)
+    }
+
+    def "update remaining hate count if user exists in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def userInfo = new UserInfo()
+            def entity = new UserEntity()
+            entity.setRemainingHateCount(12)
+            userInfo.setUserId("1")
+            def userEntity = Optional.of(entity)
+
+        when:
+            userService.updateRemainingHateCount(token)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            1 * userRepository.save(entity)
+            notThrown(NotFoundException)
+    }
+
+    def "should throw NotFoundException and don't update remaining hate count if user doesn't exist in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def userInfo = new UserInfo()
+            userInfo.setUserId("1")
+            def userEntity = Optional.empty()
+
+        when:
+            userService.updateRemainingHateCount(token)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            thrown(NotFoundException)
+    }
+
+    def "should throw ExceedLimitException and don't update remaining hate count if there is not any remaining hate count in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def userInfo = new UserInfo()
+            def entity = new UserEntity()
+            entity.setRemainingHateCount(0)
+            userInfo.setUserId("1")
+            def userEntity = Optional.of(entity)
+
+        when:
+            userService.updateRemainingHateCount(token)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            thrown(ExceedLimitException)
+    }
+
+    def "get user by id if user exists in database"() {
+
+        given:
+            def userEntity = new UserEntity()
+            userEntity.setId(1)
+            def user = Optional.of(userEntity)
+            def userDetail = new UserDetail()
+            userDetail.setId(1)
+        when:
+            userService.getUserById(userEntity.getId())
+
+        then:
+            1 * userRepository.findById(userEntity.getId()) >> user
+            UserMapper.INSTANCE.entityToDto(userEntity) == userDetail
+            notThrown(NotFoundException)
+    }
+
+    def "should throw NotFoundException and don't get user by id if user doesn't exist in database"() {
+
+        given:
+            def userId = 1
+            def userEntity = Optional.empty()
+        when:
+            userService.getUserById(userId)
+
+        then:
+            1 * userRepository.findById(userId) >> userEntity
+            thrown(NotFoundException)
     }
 
 
