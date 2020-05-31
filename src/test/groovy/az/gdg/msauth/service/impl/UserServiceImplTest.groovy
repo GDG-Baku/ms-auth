@@ -1,11 +1,8 @@
-package az.gdg.msauth.service
+package az.gdg.msauth.service.impl
 
 import az.gdg.msauth.client.MsStorageClient
 import az.gdg.msauth.dao.UserRepository
-import az.gdg.msauth.exception.ExceedLimitException
-import az.gdg.msauth.exception.NotAllowedException
-import az.gdg.msauth.exception.NotFoundException
-import az.gdg.msauth.exception.WrongDataException
+import az.gdg.msauth.exception.*
 import az.gdg.msauth.mapper.UserMapper
 import az.gdg.msauth.model.dto.UserDTO
 import az.gdg.msauth.model.dto.UserDetail
@@ -14,6 +11,8 @@ import az.gdg.msauth.security.model.dto.UserInfo
 import az.gdg.msauth.security.util.TokenUtil
 import az.gdg.msauth.service.impl.MailServiceImpl
 import az.gdg.msauth.service.impl.UserServiceImpl
+import org.springframework.mock.web.MockMultipartFile
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import spock.lang.Specification
 import spock.lang.Title
 
@@ -452,6 +451,148 @@ class UserServiceImplTest extends Specification {
         then:
             1 * userRepository.findById(userId) >> userEntity
             thrown(NotFoundException)
+    }
+
+    def "get users by id"() {
+
+        given:
+            def userIds = []
+            userIds.add(1)
+            def userEntity = new UserEntity()
+            def listUsers = []
+            listUsers.add(userEntity)
+            def userDetails = UserMapper.INSTANCE.entityToDtoList(listUsers)
+
+        when:
+            userService.getUsersById(userIds)
+
+        then:
+            1 * userRepository.findByIdIn(userIds) >> listUsers
+            UserMapper.INSTANCE.entityToDtoList(listUsers) == userDetails
+    }
+
+    def "change password if user exists in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def password = "12344"
+            def userEntity = new UserEntity()
+            userEntity.setMail("example.com")
+            userEntity.setPassword("dwdkfuiwghruiwghru")
+
+        when:
+            userService.changePassword(token, password)
+
+        then:
+            1 * tokenUtil.getMailFromToken(token) >> userEntity.getMail()
+            1 * userRepository.findByMail(userEntity.getMail()) >> userEntity
+            1 * userRepository.save(userEntity)
+            notThrown(NotFoundException)
+    }
+
+    def "should throw WrongDataException and don't change password if new password is equal old one"() {
+
+        given:
+            def token = "dsadsfsf"
+            def password = "12344"
+            def userEntity = new UserEntity()
+            userEntity.setMail("example.com")
+            userEntity.setPassword(new BCryptPasswordEncoder().encode("12344"))
+
+        when:
+            userService.changePassword(token, password)
+
+        then:
+            1 * tokenUtil.getMailFromToken(token) >> userEntity.getMail()
+            1 * userRepository.findByMail(userEntity.getMail()) >> userEntity
+            thrown(WrongDataException)
+    }
+
+    def "should throw NotFoundException and don't change password if user doesn't exist in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def password = "12344"
+            def userEntity = null
+            def email = "example.com"
+
+        when:
+            userService.changePassword(token, password)
+
+        then:
+            1 * tokenUtil.getMailFromToken(token) >> email
+            1 * userRepository.findByMail(email) >> userEntity
+            thrown(NotFoundException)
+    }
+
+    def "update image if multipartFile is not null"() {
+
+        given:
+            def token = "dsadsfsf"
+            def multipartFile = new MockMultipartFile("image.img", "image.img", "asddd", new byte[1])
+            def userInfo = new UserInfo()
+            def entity = new UserEntity()
+            userInfo.setUserId("1")
+            def userEntity = Optional.of(entity)
+
+        when:
+            userService.updateImage(token, multipartFile)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            1 * userRepository.save(entity)
+            notThrown(NullPointerException)
+    }
+
+    def "should throw NullPointerException and don't update image if multipartFile is null"() {
+
+        given:
+            def token = "dsadsfsf"
+            def multipartFile = null
+
+        when:
+            userService.updateImage(token, multipartFile)
+
+        then:
+            thrown(NullPointerException)
+    }
+
+    def "should throw NotFoundException and don't update image if user doesn't exist in database"() {
+
+        given:
+            def token = "dsadsfsf"
+            def multipartFile = new MockMultipartFile("image.img", "image.img", "asddd", new byte[1])
+            def userInfo = new UserInfo()
+            userInfo.setUserId("1")
+            def userEntity = Optional.empty()
+
+        when:
+            userService.updateImage(token, multipartFile)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            thrown(NotFoundException)
+    }
+
+    def "should throw StorageException and don't update image if fileName consists .."() {
+
+        given:
+            def token = "dsadsfsf"
+            def multipartFile = new MockMultipartFile("..image.img", "..image.img", "asddd", new byte[1])
+            def userInfo = new UserInfo()
+            def entity = new UserEntity()
+            userInfo.setUserId("1")
+            def userEntity = Optional.of(entity)
+
+        when:
+            userService.updateImage(token, multipartFile)
+
+        then:
+            1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
+            1 * userRepository.findById(Integer.parseInt(userInfo.getUserId())) >> userEntity
+            thrown(StorageException)
     }
 
 

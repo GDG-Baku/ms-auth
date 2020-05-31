@@ -28,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 
 @Service
@@ -309,25 +308,19 @@ public class UserServiceImpl implements UserService {
         logger.info("ActionLog.updateImage.fileName : {} ", fileName);
 
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
-        Optional<UserEntity> userEntity = userRepository.findById(Integer.parseInt(userInfo.getUserId()));
+        UserEntity userEntity = userRepository.findById(Integer.parseInt(userInfo.getUserId())).orElseThrow(
+                () -> new NotFoundException("Not found such user")
+        );
 
-        if (userEntity.isPresent()) {
-            UserEntity user = userEntity.get();
-            if (fileName.contains("..")) {
-                throw new StorageException("Cannot store file with relative path outside current directory " +
-                        fileName);
-            }
-
-            String imageUrl = msStorageClient.uploadFile("Users", multipartFile);
-            user.setImageUrl(imageUrl);
-
-            userRepository.save(user);
-
-
-        } else {
-            throw new NotFoundException("Not found such user");
+        if (fileName.contains("..")) {
+            throw new StorageException("Cannot store file with relative path outside current directory " +
+                    fileName);
         }
 
+        String imageUrl = msStorageClient.uploadFile("Users", multipartFile);
+        userEntity.setImageUrl(imageUrl);
+
+        userRepository.save(userEntity);
 
         logger.info("ActionLog.updateImage.stop.success.fileName : {} ", multipartFile.getOriginalFilename());
     }
