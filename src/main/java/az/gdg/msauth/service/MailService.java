@@ -6,5 +6,4 @@ public interface MailService {
 
     void sendToQueue(MailDTO mailDTO);
 
-    void sendMail(String body, String to, String subject);
 }

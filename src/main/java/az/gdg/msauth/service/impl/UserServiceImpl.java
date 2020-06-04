@@ -8,6 +8,7 @@ import az.gdg.msauth.exception.NotFoundException;
 import az.gdg.msauth.exception.StorageException;
 import az.gdg.msauth.exception.WrongDataException;
 import az.gdg.msauth.mapper.UserMapper;
+import az.gdg.msauth.model.dto.MailDTO;
 import az.gdg.msauth.model.dto.UserDTO;
 import az.gdg.msauth.model.dto.UserDetail;
 import az.gdg.msauth.model.entity.UserEntity;
@@ -26,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,11 +77,17 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(userEntity);
 
-            mailService.sendMail("<h2>" + "Verify Account" + "</h2>" + "</br>" +
+            MailDTO mail = MailDTO.builder()
+                    .to(Collections.singletonList(userDTO.getMail()))
+                    .subject("Your registration letter")
+                    .body("<h2>" + "Verify Account" + "</h2>" + "</br>" +
                             "<a href=" +
                             "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + ">" +
-                            "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>",
-                    userDTO.getMail(), "Your verification letter");
+                            "https://gdg-ms-auth.herokuapp.com/user/verify-account?token=" + token + "</a>")
+                    .build();
+
+            mailService.sendToQueue(mail);
+
 
             logger.info("ActionLog.signUp user.stop.success.email : {}", userDTO.getMail());
         } else {
@@ -114,11 +123,16 @@ public class UserServiceImpl implements UserService {
 
             String token = tokenUtil.generateTokenWithEmail(mail);
 
-            mailService.sendMail("<h2>" + "Reset Password" + "</h2>" + "</br>" +
+            MailDTO mailDTO = MailDTO.builder()
+                    .to(Collections.singletonList(mail))
+                    .subject("Your reset password letter")
+                    .body("<h2>" + "Reset Password" + "</h2>" + "</br>" +
                             "<a href=" +
                             "http://virustat.org/reset.html?token=" + token + ">" +
-                            "http://virustat.org/reset.html?token=" + token + "</a>",
-                    mail, "Your reset password letter");
+                            "http://virustat.org/reset.html?token=" + token + "</a>")
+                    .build();
+
+            mailService.sendToQueue(mailDTO);
 
         } else {
             throw new NotFoundException("Not found such user!");
@@ -151,8 +165,13 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Not found such user!");
         }
 
-        mailService.sendMail("<h2>" + "Your password has been changed successfully" + "</h2>",
-                mail, "Successfully Changed");
+        MailDTO mailDTO = MailDTO.builder()
+                .to(Collections.singletonList(mail))
+                .subject("Successfully Changed")
+                .body("<h2>" + "Your password has been changed successfully" + "</h2>")
+                .build();
+
+        mailService.sendToQueue(mailDTO);
 
         logger.info("ActionLog.changePassword.stop.success");
 
@@ -176,8 +195,11 @@ public class UserServiceImpl implements UserService {
     public List<UserDetail> getUsersById(List<Integer> userIds) {
         logger.info("ActionLog.getUsersById.start.userIds : {}", userIds);
 
-        List<UserEntity> users = userRepository.findByIdIn(userIds);
-        List<UserDetail> userDetails = UserMapper.INSTANCE.entityToDtoList(users);
+        List<UserDetail> userDetails = new ArrayList<>();
+        for (Integer userId : userIds) {
+            userRepository.findById(userId)
+                    .ifPresent(userEntity -> userDetails.add(UserMapper.INSTANCE.entityToDto(userEntity)));
+        }
 
         logger.info("ActionLog.getUsersById.stop.success");
 

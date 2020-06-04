@@ -4,6 +4,7 @@ import az.gdg.msauth.client.MsStorageClient
 import az.gdg.msauth.dao.UserRepository
 import az.gdg.msauth.exception.*
 import az.gdg.msauth.mapper.UserMapper
+import az.gdg.msauth.model.dto.MailDTO
 import az.gdg.msauth.model.dto.UserDTO
 import az.gdg.msauth.model.dto.UserDetail
 import az.gdg.msauth.model.entity.UserEntity
@@ -137,16 +138,21 @@ class UserServiceImplTest extends Specification {
         given:
             def userEntity = new UserEntity()
             userEntity.setMail("example.com")
+            MailDTO mailDTO = MailDTO.builder()
+                    .to(Collections.singletonList(userEntity.getMail()))
+                    .subject("Your reset password letter")
+                    .body("<h2>" + "Reset Password" + "</h2>" + "</br>" +
+                            "<a href=" +
+                            "http://virustat.org/reset.html?token=" + null + ">" +
+                            "http://virustat.org/reset.html?token=" + null + "</a>")
+                    .build()
 
         when: "send mail to service"
             userService.sendResetPasswordLinkToMail(userEntity.getMail())
 
         then:
             1 * userRepository.findByMail(userEntity.getMail()) >> userEntity
-            1 * mailServiceImpl.sendMail('<h2>Reset Password</h2></br>' +
-                    '<a href=http://virustat.org/reset.html?token=null>http://virustat.org/reset.html?token=null</a>',
-                    'example.com',
-                    'Your reset password letter')
+            1 * mailServiceImpl.sendToQueue(mailDTO)
             notThrown(NotFoundException)
     }
 
@@ -459,16 +465,16 @@ class UserServiceImplTest extends Specification {
             def userIds = []
             userIds.add(1)
             def userEntity = new UserEntity()
-            def listUsers = []
-            listUsers.add(userEntity)
-            def userDetails = UserMapper.INSTANCE.entityToDtoList(listUsers)
+            def user = Optional.of(userEntity)
+            def userDetails = []
+            userDetails.add(UserMapper.INSTANCE.entityToDto(userEntity))
 
         when:
             userService.getUsersById(userIds)
 
         then:
-            1 * userRepository.findByIdIn(userIds) >> listUsers
-            UserMapper.INSTANCE.entityToDtoList(listUsers) == userDetails
+            1 * userRepository.findById(userIds.get(0)) >> user
+            UserMapper.INSTANCE.entityToDto(userEntity) == userDetails.get(0)
     }
 
     def "change password if user exists in database"() {
