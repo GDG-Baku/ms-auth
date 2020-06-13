@@ -20,10 +20,10 @@ import spock.lang.Title
 class AuthenticationServiceImplTest extends Specification {
 
 
-    TokenUtil tokenUtil
-    UserRepository userRepository
-    AuthenticationManager authenticationManager
-    AuthenticationServiceImpl authenticationServiceImp
+    private TokenUtil tokenUtil
+    private UserRepository userRepository
+    private AuthenticationManager authenticationManager
+    private AuthenticationServiceImpl authenticationServiceImp
 
     def setup() {
         tokenUtil = Mock()

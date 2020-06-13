@@ -59,14 +59,14 @@ public class UserController {
 
     @ApiOperation("get user by id for blog service")
     @GetMapping("/{userId}")
-    public UserDetail getUserById(@PathVariable("userId") Integer userId) {
+    public UserDetail getUserById(@PathVariable("userId") Long userId) {
         logger.debug("getUserById start : userId {}", userId);
         return userService.getUserById(userId);
     }
 
     @ApiOperation("get users by id for blog service")
     @PostMapping("/get-users")
-    public List<UserDetail> getUsersById(@RequestBody List<Integer> userIds) {
+    public List<UserDetail> getUsersById(@RequestBody List<Long> userIds) {
         logger.debug("getUsersById start : userId {}", userIds);
         return userService.getUsersById(userIds);
     }
@@ -99,7 +99,7 @@ public class UserController {
 
     @PutMapping("/popularity/{userId}")
     @ApiOperation("add popularity to user for his article which is read")
-    public void addPopularity(@PathVariable("userId") Integer id) {
+    public void addPopularity(@PathVariable("userId") Long id) {
         logger.debug("addPopularity start : id {}", id);
         userService.addPopularity(id);
     }

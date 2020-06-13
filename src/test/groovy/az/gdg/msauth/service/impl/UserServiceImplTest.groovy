@@ -20,11 +20,11 @@ import spock.lang.Title
 @Title("Testing for user service implementation")
 class UserServiceImplTest extends Specification {
 
-    UserRepository userRepository
-    UserServiceImpl userService
-    MailServiceImpl mailServiceImpl
-    TokenUtil tokenUtil
-    MsStorageClient msStorageClient
+    private UserRepository userRepository
+    private UserServiceImpl userService
+    private MailServiceImpl mailServiceImpl
+    private TokenUtil tokenUtil
+    private MsStorageClient msStorageClient
 
 
     def setup() {
@@ -463,7 +463,7 @@ class UserServiceImplTest extends Specification {
 
         given:
             def userIds = []
-            userIds.add(1)
+            userIds.add(1L)
             def userEntity = new UserEntity()
             def user = Optional.of(userEntity)
             def userDetails = []

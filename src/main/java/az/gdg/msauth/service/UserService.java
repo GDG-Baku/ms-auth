@@ -16,11 +16,11 @@ public interface UserService {
 
     void changePassword(String token, String password);
 
-    UserDetail getUserById(Integer id);
+    UserDetail getUserById(Long id);
 
-    List<UserDetail> getUsersById(List<Integer> userIds);
+    List<UserDetail> getUsersById(List<Long> userIds);
 
-    void addPopularity(Integer userId);
+    void addPopularity(Long userId);
 
     List<UserDetail> getPopularUsers();
 

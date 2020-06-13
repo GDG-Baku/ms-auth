@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetail getUserById(Integer id) {
+    public UserDetail getUserById(Long id) {
         logger.info("ActionLog.getUserById.start.id : {}", id);
 
         UserEntity user = userRepository.findById(id).orElseThrow(
@@ -192,11 +192,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDetail> getUsersById(List<Integer> userIds) {
+    public List<UserDetail> getUsersById(List<Long> userIds) {
         logger.info("ActionLog.getUsersById.start.userIds : {}", userIds);
 
         List<UserDetail> userDetails = new ArrayList<>();
-        for (Integer userId : userIds) {
+        for (Long userId : userIds) {
             userRepository.findById(userId)
                     .ifPresent(userEntity -> userDetails.add(UserMapper.INSTANCE.entityToDto(userEntity)));
         }
@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addPopularity(Integer userId) {
+    public void addPopularity(Long userId) {
         logger.info("ActionLog.addPopularity.start.userId : {}", userId);
         UserEntity user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Not found such user")
@@ -234,7 +234,7 @@ public class UserServiceImpl implements UserService {
     public void updateRemainingQuackCount(String token) {
         logger.info("ActionLog.updateRemainingQuackCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
-        Integer userId = Integer.parseInt(userInfo.getUserId());
+        Long userId = Long.parseLong(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Not found such user")
@@ -256,7 +256,7 @@ public class UserServiceImpl implements UserService {
     public void updateRemainingHateCount(String token) {
         logger.info("ActionLog.updateRemainingHateCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
-        Integer userId = Integer.parseInt(userInfo.getUserId());
+        Long userId = Long.parseLong(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Not found such user")
@@ -278,7 +278,7 @@ public class UserServiceImpl implements UserService {
     public Integer getRemainingQuackCount(String token) {
         logger.info("ActionLog.getRemainingQuackCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
-        Integer userId = Integer.parseInt(userInfo.getUserId());
+        Long userId = Long.parseLong(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Not found such user")
@@ -292,7 +292,7 @@ public class UserServiceImpl implements UserService {
     public Integer getRemainingHateCount(String token) {
         logger.info("ActionLog.getRemainingHateCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
-        Integer userId = Integer.parseInt(userInfo.getUserId());
+        Long userId = Long.parseLong(userInfo.getUserId());
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Not found such user")
@@ -330,7 +330,7 @@ public class UserServiceImpl implements UserService {
         logger.info("ActionLog.updateImage.fileName : {} ", fileName);
 
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
-        UserEntity userEntity = userRepository.findById(Integer.parseInt(userInfo.getUserId())).orElseThrow(
+        UserEntity userEntity = userRepository.findById(Long.parseLong(userInfo.getUserId())).orElseThrow(
                 () -> new NotFoundException("Not found such user")
         );
 
