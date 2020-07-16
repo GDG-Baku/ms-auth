@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void signUp(UserDTO userDTO) {
-        logger.info("ActionLog.signUp user.start.email : {} ", userDTO.getMail());
+        logger.info("ServiceLog.signUp user.start.email : {} ", userDTO.getMail());
 
         if (userDTO.getAreTermsAndConditionsConfirmed()) {
             UserEntity checkedEmail = userRepository.findByMail(userDTO.getMail());
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
             mailService.sendToQueue(mail);
 
 
-            logger.info("ActionLog.signUp user.stop.success.email : {}", userDTO.getMail());
+            logger.info("ServiceLog.signUp user.stop.success.email : {}", userDTO.getMail());
         } else {
             throw new NotAllowedException("Not allowed sign up operation, if you don't agree our terms and conditions");
         }
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void verifyAccount(String token) {
-        logger.info("ActionLog.verifyAccount.start");
+        logger.info("ServiceLog.verifyAccount.start");
         String mail = tokenUtil.getMailFromToken(token);
         UserEntity user = userRepository.findByMail(mail);
 
@@ -110,13 +110,13 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Not found such user");
         }
 
-        logger.info("ActionLog.verifyAccount.stop.success");
+        logger.info("ServiceLog.verifyAccount.stop.success");
 
     }
 
     @Override
     public void sendResetPasswordLinkToMail(String mail) {
-        logger.info("ActionLog.sendResetPasswordLinkToMail.start.mail : {}", mail);
+        logger.info("ServiceLog.sendResetPasswordLinkToMail.start.mail : {}", mail);
         UserEntity user = userRepository.findByMail(mail);
 
         if (user != null) {
@@ -138,13 +138,13 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Not found such user!");
         }
 
-        logger.info("ActionLog.sendResetPasswordLinkToMail.stop.success.mail : {}", mail);
+        logger.info("ServiceLog.sendResetPasswordLinkToMail.stop.success.mail : {}", mail);
 
     }
 
     @Override
     public void changePassword(String token, String password) {
-        logger.info("ActionLog.changePassword.start");
+        logger.info("ServiceLog.changePassword.start");
         String mail = tokenUtil.getMailFromToken(token);
 
         UserEntity user = userRepository.findByMail(mail);
@@ -173,19 +173,19 @@ public class UserServiceImpl implements UserService {
 
         mailService.sendToQueue(mailDTO);
 
-        logger.info("ActionLog.changePassword.stop.success");
+        logger.info("ServiceLog.changePassword.stop.success");
 
     }
 
     @Override
     public UserDetail getUserById(Long id) {
-        logger.info("ActionLog.getUserById.start.id : {}", id);
+        logger.info("ServiceLog.getUserById.start.id : {}", id);
 
         UserEntity user = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Not found such user")
         );
 
-        logger.info("ActionLog.getUserById.success.id : {}", id);
+        logger.info("ServiceLog.getUserById.success.id : {}", id);
 
         return UserMapper.INSTANCE.entityToDto(user);
 
@@ -193,7 +193,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDetail> getUsersById(List<Long> userIds) {
-        logger.info("ActionLog.getUsersById.start.userIds : {}", userIds);
+        logger.info("ServiceLog.getUsersById.start.userIds : {}", userIds);
 
         List<UserDetail> userDetails = new ArrayList<>();
         for (Long userId : userIds) {
@@ -201,14 +201,14 @@ public class UserServiceImpl implements UserService {
                     .ifPresent(userEntity -> userDetails.add(UserMapper.INSTANCE.entityToDto(userEntity)));
         }
 
-        logger.info("ActionLog.getUsersById.stop.success");
+        logger.info("ServiceLog.getUsersById.stop.success");
 
         return userDetails;
     }
 
     @Override
     public void addPopularity(Long userId) {
-        logger.info("ActionLog.addPopularity.start.userId : {}", userId);
+        logger.info("ServiceLog.addPopularity.start.userId : {}", userId);
         UserEntity user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Not found such user")
         );
@@ -216,23 +216,23 @@ public class UserServiceImpl implements UserService {
         user.setPopularity(user.getPopularity() + 1);
         userRepository.save(user);
 
-        logger.info("ActionLog.addPopularity.stop.success.userId : {}", userId);
+        logger.info("ServiceLog.addPopularity.stop.success.userId : {}", userId);
     }
 
     @Override
     @Cacheable(value = "populars")
     public List<UserDetail> getPopularUsers() {
-        logger.info("ActionLog.getPopularUsers.start");
+        logger.info("ServiceLog.getPopularUsers.start");
         List<UserEntity> users = userRepository.findFirst3ByOrderByPopularityDesc();
 
         List<UserDetail> populars = UserMapper.INSTANCE.entityToDtoList(users);
-        logger.info("ActionLog.getPopularUsers.stop.success");
+        logger.info("ServiceLog.getPopularUsers.stop.success");
         return populars;
     }
 
     @Override
     public void updateRemainingQuackCount(String token) {
-        logger.info("ActionLog.updateRemainingQuackCount.start");
+        logger.info("ServiceLog.updateRemainingQuackCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
         Long userId = Long.parseLong(userInfo.getUserId());
 
@@ -247,14 +247,14 @@ public class UserServiceImpl implements UserService {
             throw new ExceedLimitException("You've already used your daily quacks!");
         }
 
-        logger.info("ActionLog.updateRemainingQuackCount.stop.success");
+        logger.info("ServiceLog.updateRemainingQuackCount.stop.success");
 
 
     }
 
     @Override
     public void updateRemainingHateCount(String token) {
-        logger.info("ActionLog.updateRemainingHateCount.start");
+        logger.info("ServiceLog.updateRemainingHateCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
         Long userId = Long.parseLong(userInfo.getUserId());
 
@@ -270,13 +270,13 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        logger.info("ActionLog.updateRemainingHateCount.stop.success");
+        logger.info("ServiceLog.updateRemainingHateCount.stop.success");
 
     }
 
     @Override
     public Integer getRemainingQuackCount(String token) {
-        logger.info("ActionLog.getRemainingQuackCount.start");
+        logger.info("ServiceLog.getRemainingQuackCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
         Long userId = Long.parseLong(userInfo.getUserId());
 
@@ -284,13 +284,13 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("Not found such user")
         );
 
-        logger.info("ActionLog.getRemainingQuackCount.stop.success");
+        logger.info("ServiceLog.getRemainingQuackCount.stop.success");
         return userEntity.getRemainingQuackCount();
     }
 
     @Override
     public Integer getRemainingHateCount(String token) {
-        logger.info("ActionLog.getRemainingHateCount.start");
+        logger.info("ServiceLog.getRemainingHateCount.start");
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
         Long userId = Long.parseLong(userInfo.getUserId());
 
@@ -298,14 +298,14 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("Not found such user")
         );
 
-        logger.info("ActionLog.getRemainingHateCount.stop.success");
+        logger.info("ServiceLog.getRemainingHateCount.stop.success");
         return userEntity.getRemainingHateCount();
     }
 
     @Override
     @Scheduled(cron = "0 52 23 * * ?")  // at 23:59 every day
     public void refreshRemainingQuackAndHateCount() {
-        logger.info("ActionLog.refreshRemainingQuackAndHateCount.start");
+        logger.info("ServiceLog.refreshRemainingQuackAndHateCount.start");
         List<UserEntity> users = userRepository.findAll();
         if (!users.isEmpty()) {
             users
@@ -318,16 +318,16 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("There isn't any user in database");
         }
 
-        logger.info("ActionLog.refreshRemainingQuackAndHateCount.stop.success");
+        logger.info("ServiceLog.refreshRemainingQuackAndHateCount.stop.success");
     }
 
     @Override
-    public void updateImage(String token, MultipartFile multipartFile) {
-        logger.info("ActionLog.updateImage.start");
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename(),
+    public void updateImage(String token, List<MultipartFile> multipartFile) {
+        logger.info("ServiceLog.updateImage.start");
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.get(0).getOriginalFilename(),
                 "File content must not be null!"));
 
-        logger.info("ActionLog.updateImage.fileName : {} ", fileName);
+        logger.info("ServiceLog.updateImage.fileName : {} ", fileName);
 
         UserInfo userInfo = tokenUtil.getUserInfoFromToken(token);
         UserEntity userEntity = userRepository.findById(Long.parseLong(userInfo.getUserId())).orElseThrow(
@@ -344,7 +344,7 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(userEntity);
 
-        logger.info("ActionLog.updateImage.stop.success.fileName : {} ", multipartFile.getOriginalFilename());
+        logger.info("ServiceLog.updateImage.stop.success.fileName : {} ", multipartFile.get(0).getOriginalFilename());
     }
 
 

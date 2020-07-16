@@ -33,7 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public JwtAuthenticationResponse createAuthenticationToken(JwtAuthenticationRequest request) {
-        logger.info("ActionLog.createAuthenticationToken.start.mail : {}", request.getMail());
+        logger.info("ServiceLog.createAuthenticationToken.start.mail : {}", request.getMail());
 
         authenticate(request.getMail(), request.getPassword());
         UserEntity userEntity = userRepository.findByMail(request.getMail());
@@ -47,7 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     String status = userEntity.getStatus().toString();
                     String token = tokenUtil.generateToken(request.getMail(), userId, role, status);
 
-                    logger.info("ActionLog.createAuthenticationToken.stop.success.mail : {}", request.getMail());
+                    logger.info("ServiceLog.createAuthenticationToken.stop.success.mail : {}", request.getMail());
                     return new JwtAuthenticationResponse(token);
                 case "REGISTERED":
                     throw new AuthenticationException("Your registration is not verified," +
@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public void authenticate(String username, String password) {
-        logger.info("ActionLog.authenticate.start.username : {}", username);
+        logger.info("ServiceLog.authenticate.start.username : {}", username);
 
         if (username != null && password != null) {
             try {
@@ -79,13 +79,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new WrongDataException("Username or Password is null!");
         }
 
-        logger.info("ActionLog.authenticate.stop.success.username : {}", username);
+        logger.info("ServiceLog.authenticate.stop.success.username : {}", username);
     }
 
     public UserInfo validateToken(String token) {
-        logger.info("ActionLog.validateToken.start");
+        logger.info("ServiceLog.validateToken.start");
         tokenUtil.isTokenValid(token);
-        logger.info("ActionLog.validateToken.stop.success");
+        logger.info("ServiceLog.validateToken.stop.success");
 
         return tokenUtil.getUserInfoFromToken(token);
     }

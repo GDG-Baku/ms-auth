@@ -144,7 +144,7 @@ public class UserController {
     @ApiOperation("update image")
     @PutMapping("/update-image")
     public void updateImage(@RequestHeader("X-Auth-Token") String token,
-                            @RequestParam MultipartFile multipartFile) {
+                            @RequestParam List<MultipartFile> multipartFile) {
         logger.debug("updateImage start");
         userService.updateImage(token, multipartFile);
         logger.debug("updateImage stop success");

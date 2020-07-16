@@ -14,6 +14,7 @@ import az.gdg.msauth.service.impl.MailServiceImpl
 import az.gdg.msauth.service.impl.UserServiceImpl
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.web.multipart.MultipartFile
 import spock.lang.Specification
 import spock.lang.Title
 
@@ -536,13 +537,15 @@ class UserServiceImplTest extends Specification {
         given:
             def token = "dsadsfsf"
             def multipartFile = new MockMultipartFile("image.img", "image.img", "asddd", new byte[1])
+            def listMultipartFile = []
+            listMultipartFile.add(multipartFile)
             def userInfo = new UserInfo()
             def entity = new UserEntity()
             userInfo.setUserId("1")
             def userEntity = Optional.of(entity)
 
         when:
-            userService.updateImage(token, multipartFile)
+            userService.updateImage(token, listMultipartFile as List<MultipartFile>)
 
         then:
             1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
@@ -569,12 +572,14 @@ class UserServiceImplTest extends Specification {
         given:
             def token = "dsadsfsf"
             def multipartFile = new MockMultipartFile("image.img", "image.img", "asddd", new byte[1])
+            def listMultipartFile = []
+            listMultipartFile.add(multipartFile)
             def userInfo = new UserInfo()
             userInfo.setUserId("1")
             def userEntity = Optional.empty()
 
         when:
-            userService.updateImage(token, multipartFile)
+            userService.updateImage(token, listMultipartFile)
 
         then:
             1 * tokenUtil.getUserInfoFromToken(token) >> userInfo
@@ -587,13 +592,15 @@ class UserServiceImplTest extends Specification {
         given:
             def token = "dsadsfsf"
             def multipartFile = new MockMultipartFile("..image.img", "..image.img", "asddd", new byte[1])
+            def listMultipartFile = []
+            listMultipartFile.add(multipartFile)
             def userInfo = new UserInfo()
             def entity = new UserEntity()
             userInfo.setUserId("1")
             def userEntity = Optional.of(entity)
 
         when:
-            userService.updateImage(token, multipartFile)
+            userService.updateImage(token, listMultipartFile)
 
         then:
             1 * tokenUtil.getUserInfoFromToken(token) >> userInfo

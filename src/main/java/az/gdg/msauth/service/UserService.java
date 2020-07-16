@@ -34,7 +34,7 @@ public interface UserService {
 
     void refreshRemainingQuackAndHateCount();
 
-    void updateImage(String token, MultipartFile multipartFile);
+    void updateImage(String token, List<MultipartFile> multipartFile);
 
 
 }
